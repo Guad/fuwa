@@ -25,6 +25,7 @@ def index():
 		extension = f.filename.split('.')[-1]
 		filename = genHash(f.filename) + '.' + extension
 		f.save('static/files/%s' % filename)
+		print 'Uploaded file \'%s\'' % filename
 		return flask.redirect(flask.url_for('getFile', filename=filename))
 	else:
 		return flask.render_template('index.html')
