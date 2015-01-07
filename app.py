@@ -30,7 +30,7 @@ def index():
 
 @app.route('/<filename>/')
 def getFile(filename):
-	return 'requested file is ' + filename
+	return flask.send_from_directory('static/files', filename)
 
 
 if __name__ == '__main__':
