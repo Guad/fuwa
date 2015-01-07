@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, render_template
 import string, random
 
 app = Flask(__name__)
@@ -12,9 +12,21 @@ def genHash(seed):
     return hash_value
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-	return 'file upload goes here'
+	if request.method == 'POST':
+		print 'test'
+		"""
+			NOTE
+			SANITIZE INPUT HERE. ON THE TODO LIST.
+		"""
+		f = request.files['the_file']
+		extension = f.filename.split('.')[-1]
+		filename = genHash(f.filename) + '.' + extension
+		f.save('static/files/%s' % filename)
+		return redirect(url_for('getFile', filename=filename))
+	else:
+		return render_template('index.html')
 
 @app.route('/<filename>/')
 def getFile(filename):
