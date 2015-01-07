@@ -1,7 +1,7 @@
-from flask import Flask, request, render_template
+import flask 
 import string, random
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 def genHash(seed):
     base = string.ascii_lowercase+string.digits
@@ -14,19 +14,19 @@ def genHash(seed):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-	if request.method == 'POST':
+	if flask.request.method == 'POST':
 		print 'test'
 		"""
 			NOTE
 			SANITIZE INPUT HERE. ON THE TODO LIST.
 		"""
-		f = request.files['the_file']
+		f = flask.request.files['file']
 		extension = f.filename.split('.')[-1]
 		filename = genHash(f.filename) + '.' + extension
 		f.save('static/files/%s' % filename)
-		return redirect(url_for('getFile', filename=filename))
+		return flask.redirect(flask.url_for('getFile', filename=filename))
 	else:
-		return render_template('index.html')
+		return flask.render_template('index.html')
 
 @app.route('/<filename>/')
 def getFile(filename):
