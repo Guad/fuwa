@@ -2,6 +2,7 @@ import flask
 import string, random
 
 app = flask.Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
 def genHash(seed):
     base = string.ascii_lowercase+string.digits
