@@ -66,5 +66,4 @@ def getFile(dirname, filename=None): #File delivery to the client
 
 
 if __name__ == '__main__':
-	app.debug = True
 	app.run() #Run our app.
