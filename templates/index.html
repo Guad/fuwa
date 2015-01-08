@@ -33,18 +33,18 @@
 <body class="center">
   <h2>ChinkBloat</h2>
   <p>Up to 10MiB of your bloat. Chinked.</p>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-       {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
   <form class="cener-block" method="POST" enctype="multipart/form-data">
     <span class="btn btn-default btn-file">
-      Chink<input type="file" name="file" required>
+      Chink<input type="file" name="file[]" multiple required>
     </span>
     <input class="btn btn-default" type="submit" value="Bloat"></input>
   </form>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+       {% for message in messages %}
+        <p>{{ message|safe }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 </body>
 </html>
