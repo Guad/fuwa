@@ -42,7 +42,7 @@ def index():
 			if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
 				os.mkdir('static/files/%s' % dirname) #Make it
 				f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
-				print 'Uploaded file \'%s\'' % secure_filename(f.filename) #Log what file was uploaded
+				print 'Uploaded file "%s" to %s' % (secure_filename(f.filename), dirname) #Log what file was uploaded
 				flask.flash(flask.Markup('Uploaded file %s to <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link.
 			else:
 				flask.flash(flask.Markup('File %s already exists at <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link
