@@ -52,8 +52,8 @@ def index():
 		return flask.render_template('index.html')
 		#Return the index to the client.
 
-@app.route('/<dirname>/')
-@app.route('/<dirname>/<filename>/')
+@app.route('/<dirname>')
+@app.route('/<dirname>/<filename>')
 def getFile(dirname, filename=None): #File delivery to the client
 	if filename: #Dir and filename is provided
 		return flask.send_from_directory('static/files/%s' % (dirname), filename) #Gets the file 'filename' from the directory /static/files/
