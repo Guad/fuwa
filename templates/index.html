@@ -1,14 +1,43 @@
-<!DOCTYPE html>
-<HTML>
-	<head>
-		<title>ChinkBloat</title>
-	</head>
-	<body>
-		<h2>Welcome to chink uploading service</h2>
-		<form  method=POST enctype=multipart/form-data>
-			<p>Select your file. Size limit is 10MiB</p>
-			<input type="file" name="file" required>
-			<input type="submit" value="upload">
-		</form>
-	</body>
-</HTML>
+<html>
+<head>
+  <title>ChinkBloat</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <style>
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  outline: none;
+  background: white;
+  cursor: inherit;
+  display: block;
+}
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+  </style>
+</head>
+<body class="center">
+  <h2>ChinkBloat</h2>
+  <p>Up to 10MiB of your bloat. Chinked.</p>
+  <form class="cener-block" method="POST" enctype="multipart/form-data">
+    <span class="btn btn-default btn-file">
+      Chink<input type="file" name="file" required>
+    </span>
+    <input class="btn btn-default" type="submit" value="Bloat"></input>
+  </form>
+</body>
+</html>
