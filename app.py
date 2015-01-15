@@ -32,20 +32,23 @@ def index():
 		"""
 		uploaded = flask.request.files.getlist("file[]")
 		for f in uploaded:
-			hasher = hashlib.md5() 		
-			buf = f.read()		   		
-			f.seek(0) #Set cursor back to position 0 so we can read it again in the save function.
-										# We hash the file to get its filename.	   		
-										# So that we can upload two different images with the same filename,
-			hasher.update(buf)	   		# But not two same images with different filenames.
-			dirname = genHash(hasher.hexdigest())
-			if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
-				os.mkdir('static/files/%s' % dirname) #Make it
-				f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
-				print 'Uploaded file "%s" to %s' % (secure_filename(f.filename), dirname) #Log what file was uploaded
-				flask.flash(flask.Markup('Uploaded file %s to <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link.
+			if secure_filename(f.filename):
+				hasher = hashlib.md5() 		
+				buf = f.read()		   		
+				f.seek(0) #Set cursor back to position 0 so we can read it again in the save function.
+											# We hash the file to get its filename.	   		
+											# So that we can upload two different images with the same filename,
+				hasher.update(buf)	   		# But not two same images with different filenames.
+				dirname = genHash(hasher.hexdigest())
+				if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
+					os.mkdir('static/files/%s' % dirname) #Make it
+					f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
+					print 'Uploaded file "%s" to %s' % (secure_filename(f.filename), dirname) #Log what file was uploaded
+					flask.flash(flask.Markup('Uploaded file %s to <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link.
+				else:
+					flask.flash(flask.Markup('File %s already exists at <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname),dirname)) # Feedback to the user with the link
 			else:
-				flask.flash(flask.Markup('File %s already exists at <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link
+				flask.flash('Invalid filename.', flask.url_for(index))
 
 		return flask.redirect(flask.url_for('index')) #Files are done uploading, go to index to receive the messages.
 	else:
@@ -61,10 +64,9 @@ def getFile(dirname, filename=None): #File delivery to the client
 		if os.path.exists('static/files/%s' % dirname): #Does it even exist?
 			files = os.listdir('static/files/%s' % dirname)
 			if files: #Check if there's any file in the directory.
-				return flask.send_from_directory('static/files/%s' % (dirname), files[0])
+				return flask.redirect(flask.url_for('getFile', dirname=dirname, filename=files[0])) #Resend to the proper location to avoid file corruptions.
 		else:
-			flask.abort(404) # Picture has not been found.
-
+			flask.abort(404) # File has not been found.
 
 if __name__ == '__main__':
 	app.run() #Run our app.
