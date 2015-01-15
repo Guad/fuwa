@@ -37,7 +37,11 @@ def rememberFile(dirname=None, filename=None): #Add or read public files
 			return list
 
 def destroyFile(dirname):
-	rmtree('static/files/%s' % dirname)
+	try:
+		print 'Removing file', dirname
+		rmtree('static/files/%s' % dirname)
+	except:
+		pass #The file probably doesn't exists so we carry on.
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -83,7 +87,7 @@ def getFile(dirname, filename=None): #File delivery to the client
 	if filename: #Dir and filename is provided
 		if len(dirname) == 8: #This is a suicide file
 			d = []
-			d.append(dirname)
+			d.append(dirname) #Timer needs a list as an argument.
 			Timer(30, destroyFile, d).start() #He has 30 seconds to download the file
 			return flask.send_from_directory('static/files/%s' % (dirname), filename) #Gets the file 'filename' from the directory /static/files/
 		else:
