@@ -43,7 +43,7 @@
       Chink<input type="file" name="file[]" multiple required>
     </span>
     <input class="btn btn-default" type="submit" value="Bloat"></input>
-    <br/><input type="checkbox" name="public"/> Post to public feed?
+    <br/><input type="checkbox" name="public" id="publiccheckbox"/><label for="publiccheckbox"> Post to public feed?</label>
   </form>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
