@@ -2,6 +2,8 @@ import flask
 import string, random, hashlib, os
 from werkzeug import secure_filename
 from time import strftime
+from threading import Timer
+from shutil import rmtree
 
 #Load config file
 config = {}
@@ -14,11 +16,11 @@ app = flask.Flask(__name__) #Initialize our application
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024 #Set the upload limit to 10MiB
 app.secret_key = config['SECRET_KEY']
 
-def genHash(seed): #Generate five letter filenames for our files
+def genHash(seed, leng=5): #Generate five letter filenames for our files
     base = string.ascii_lowercase+string.digits 
     random.seed(seed)
     hash_value = ""
-    for i in range(5):
+    for i in range(leng): 
         hash_value += random.choice(base)
     return hash_value
 
@@ -33,6 +35,9 @@ def rememberFile(dirname=None, filename=None): #Add or read public files
 				list.append({'DIRNAME':line[0], 'FILE':line[1], 'TIME':line[2]}) #Make a list with the files
 			list.reverse() #Most recent files are shown first.
 			return list
+
+def destroyFile(dirname):
+	rmtree('static/files/%s' % dirname)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -51,12 +56,15 @@ def index():
 											# We hash the file to get its filename.	   		
 											# So that we can upload two different images with the same filename,
 				hasher.update(buf)	   		# But not two same images with different filenames.
-				dirname = genHash(hasher.hexdigest())
+				if flask.request.form.get('suicide'):
+					dirname = genHash(hasher.hexdigest(), 8)
+				else:
+					dirname = genHash(hasher.hexdigest())
 				if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
 					os.mkdir('static/files/%s' % dirname) #Make it
 					f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
 					print 'Uploaded file "%s" to %s' % (secure_filename(f.filename), dirname) #Log what file was uploaded
-					if flask.request.form.get('public'): #Did he check that box?
+					if flask.request.form.get('public') and not flask.request.form.get('suicide'): #Did he check that box? Note that suicides can't be public.
 						rememberFile(dirname, secure_filename(f.filename))
 					flask.flash(flask.Markup('Uploaded file %s to <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link.
 				else:
@@ -73,7 +81,13 @@ def index():
 @app.route('/<dirname>/<filename>')
 def getFile(dirname, filename=None): #File delivery to the client
 	if filename: #Dir and filename is provided
-		return flask.send_from_directory('static/files/%s' % (dirname), filename) #Gets the file 'filename' from the directory /static/files/
+		if len(dirname) == 8: #This is a suicide file
+			d = []
+			d.append(dirname)
+			Timer(30, destroyFile, d).start() #He has 30 seconds to download the file
+			return flask.send_from_directory('static/files/%s' % (dirname), filename) #Gets the file 'filename' from the directory /static/files/
+		else:
+			return flask.send_from_directory('static/files/%s' % (dirname), filename) #Gets the file 'filename' from the directory /static/files/
 	elif not filename: #Filename is absent - we get it for them.
 		if os.path.exists('static/files/%s' % dirname): #Does it even exist?
 			files = os.listdir('static/files/%s' % dirname)
@@ -83,5 +97,4 @@ def getFile(dirname, filename=None): #File delivery to the client
 			flask.abort(404) # File has not been found.
 
 if __name__ == '__main__':
-	app.debug = True
 	app.run() #Run our app.

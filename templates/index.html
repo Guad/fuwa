@@ -44,6 +44,8 @@
     </span>
     <input class="btn btn-default" type="submit" value="Bloat"></input>
     <br/><input type="checkbox" name="public" id="publiccheckbox"/><label for="publiccheckbox"> Post to public feed?</label>
+    <br/><input type="checkbox" name="suicide" id="suicidecheckbox"/><label for="suicidecheckbox"> Delete file after download?</label>
+    <br/>Note that suicide files can't be public.
   </form>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
