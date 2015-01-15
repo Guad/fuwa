@@ -1,6 +1,7 @@
 import flask 
 import string, random, hashlib, os
 from werkzeug import secure_filename
+from time import strftime
 
 #Load config file
 config = {}
@@ -21,6 +22,17 @@ def genHash(seed): #Generate five letter filenames for our files
         hash_value += random.choice(base)
     return hash_value
 
+def rememberFile(dirname=None, filename=None): #Add or read public files
+	with open('publicFiles.ini', 'a+') as file:
+		if dirname and filename: #Are arguments provided?
+			file.write(dirname + ' ' + filename + ' ' + strftime("%d/%m/%Y") + '\n')
+		else: #No they're not, we want to read the file.
+			list = []
+			for line in file.read().splitlines():
+				line = line.split()
+				list.append({'DIRNAME':line[0], 'FILE':line[1], 'TIME':line[2]}) #Make a list with the files
+			list.reverse() #Most recent files are shown first.
+			return list
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -44,6 +56,8 @@ def index():
 					os.mkdir('static/files/%s' % dirname) #Make it
 					f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
 					print 'Uploaded file "%s" to %s' % (secure_filename(f.filename), dirname) #Log what file was uploaded
+					if flask.request.form.get('public'): #Did he check that box?
+						rememberFile(dirname, secure_filename(f.filename))
 					flask.flash(flask.Markup('Uploaded file %s to <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link.
 				else:
 					flask.flash(flask.Markup('File %s already exists at <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname),dirname)) # Feedback to the user with the link
@@ -52,7 +66,7 @@ def index():
 
 		return flask.redirect(flask.url_for('index')) #Files are done uploading, go to index to receive the messages.
 	else:
-		return flask.render_template('index.html')
+		return flask.render_template('index.html', posts=rememberFile())
 		#Return the index to the client.
 
 @app.route('/<dirname>')
@@ -69,4 +83,5 @@ def getFile(dirname, filename=None): #File delivery to the client
 			flask.abort(404) # File has not been found.
 
 if __name__ == '__main__':
+	app.debug = True
 	app.run() #Run our app.

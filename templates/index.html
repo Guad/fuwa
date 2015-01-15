@@ -28,6 +28,11 @@
   align-items: center;
   justify-content: center;
 }
+#public-files {
+  padding: 30%;
+  margin: 30%;
+  width: 60%;
+  }
   </style>
 </head>
 <body class="center">
@@ -38,6 +43,7 @@
       Chink<input type="file" name="file[]" multiple required>
     </span>
     <input class="btn btn-default" type="submit" value="Bloat"></input>
+    <br/><input type="checkbox" name="public"/> Post to public feed?
   </form>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -46,5 +52,21 @@
       {% endfor %}
     {% endif %}
   {% endwith %}
+
+  {% if posts %}
+    <table id="public-files">
+    <tr>
+      <th>Filename</th>
+      <th>Location</th>
+      <th>Timestamp</th>
+    </tr>
+    {% for post in posts %}
+      <tr>
+        <td>{{post['FILE']}}</td>
+        <td><a href="{{ url_for('getFile', dirname=post['DIRNAME'], filename=post['FILE']) }}">{{post['DIRNAME']}}</a></td>
+        <td>{{post['TIME']}}</td>
+      </tr>
+    {% endfor %}
+  {% endif %}
 </body>
 </html>
