@@ -82,10 +82,10 @@ function processFilesRecursively(fileArray)
 			var code = resp.split(":");
 			
 			if(code[0] === 'success') {
-				$('<a target="_blank" href="' + code[1] +'">uploaded to "' + code[2] + '"</a>').insertAfter('#file' + id);
+				$('<a>upload complete!</a><span class="badge"><a target="_blank" href="' + code[1] +'">' + code[2] + '</a></span>').insertAfter('#file' + id);
 			}
 			else if(code[0] === 'exists') {
-				$('<a target="_blank" href="' + code[1] + '">The file already exists.</a>').insertAfter('#file' + id);
+				$('<a>File alerady exists!</a><span class="badge"><a target="_blank" href="' + code[1] + '">' + code[2] + '</a></span>').insertAfter('#file' + id);
 			}
 			else if(code[0] === 'error') {
 				$('<p>Invalid filename.</p>').insertAfter('#file' + id);
@@ -169,7 +169,7 @@ function fileAlertCard(filename, text) {
 function alertCard(text) {
 	var start = '<div class="row card-out"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
 	var color = 'orange ';
-	var inter = 'darken-1 z-depth-2 alert"><div class="card-content white-text">'
+	var inter = 'darken-1 z-depth-2"><div class="card-content white-text">'
 	var head = '<h5 class="truncate">';
 	var icon = '<i class="small mdi-alert-warning" style="margin-right: 2%;"></i>';
 	var name =  text;

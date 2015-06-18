@@ -100,7 +100,7 @@ def indexJS():
 					return 'success:' + flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)) + ':' + dirname
 					#flask.flash(flask.Markup('Uploaded file %s to <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname, filename=secure_filename(f.filename)),dirname)) # Feedback to the user with the link.
 				else:
-					return 'exists:' + flask.url_for('getFile', dirname=dirname)
+					return 'exists:' + flask.url_for('getFile', dirname=dirname) + ':' + dirname
 					#flask.flash(flask.Markup('File %s already exists at <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname),dirname)) # Feedback to the user with the link
 			else:
 				return 'error:filenameinvalid'
