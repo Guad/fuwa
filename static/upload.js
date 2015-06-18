@@ -40,8 +40,6 @@ function processFilesRecursively(fileArray)
 	var file = fileArray[gCounter];
 	if(file.size > 10 * 1024 * 1024)
 	{
-		//alertCard('File too large!');
-		//fileAlertCard(file.name, 'File too large!');
 		gCounter += 1;
 		total += 1;
 		processFilesRecursively(fileArray);
@@ -51,7 +49,9 @@ function processFilesRecursively(fileArray)
 	var formData = new FormData();
 
 	formData.append('file[]', file, file.name);
-	//fileCard(file.name, id);
+
+	$('#file' + id + ' > div').removeClass('indeterminate');
+	$('#file' + id + ' > div').addClass('determinate');
 
 	var request = $.ajax({
 		url: '/js',
@@ -70,16 +70,10 @@ function processFilesRecursively(fileArray)
 				        var Percentage = (current * 100)/max;
 				        var divid = '#file' + id + ' > div';
 				        $(divid).width(Percentage + '%');
-				        //console.log(divid);
-				        //console.log(Percentage + '%');
 					}  
             	}, false);
             }
         	return myXhr;
-		},
-		success: function () {
-			$('#file' + id + ' > div').removeClass('indeterminate');
-			$('#file' + id + ' > div').addClass('determinate');
 		},
 		complete: function( jqXHR, textStatus) {
 			//alert(textStatus);
@@ -102,9 +96,7 @@ function processFilesRecursively(fileArray)
 			processFilesRecursively(fileArray);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
-			//alert(errorThrown);
-			console.log(errorThrown);
-			//console.log(textStatus);
+			alertCard(errorThrown);
 			gCounter += 1;
 			total += 1;
 			processFilesRecursively(fileArray);
