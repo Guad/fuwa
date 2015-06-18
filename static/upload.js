@@ -82,10 +82,10 @@ function processFilesRecursively(fileArray)
 			var code = resp.split(":");
 			
 			if(code[0] === 'success') {
-				$('<a>upload complete!</a><span class="badge"><a target="_blank" href="' + code[1] +'">' + code[2] + '</a></span>').insertAfter('#file' + id);
+				$('<span class="badge"><a target="_blank" href="' + code[1] +'">' + code[2] + '</a></span><a>upload complete!</a>').insertAfter('#file' + id);
 			}
 			else if(code[0] === 'exists') {
-				$('<a>File alerady exists!</a><span class="badge"><a target="_blank" href="' + code[1] + '">' + code[2] + '</a></span>').insertAfter('#file' + id);
+				$('<span class="badge"><a target="_blank" href="' + code[1] + '">' + code[2] + '</a></span><a>Duplicate!</a>').insertAfter('#file' + id);
 			}
 			else if(code[0] === 'error') {
 				$('<p>Invalid filename.</p>').insertAfter('#file' + id);
