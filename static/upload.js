@@ -10,6 +10,18 @@ $(document).ready(function()
 		if(files.length === 0) {
 			alertCard('No files');
 		} else {
+			var ltotal = total;
+			for (i = 0; i < files.length; i++) {
+				var _id = i + ltotal;
+				var file = files[i];
+				if(file.size > 10 * 1024 * 1024) {
+					fileAlertCard(file.name, 'File too large!');
+					ltotal += 1;
+				} else {
+					fileCard(file.name, _id);
+					ltotal += 1;
+				}
+			}
 			processFilesRecursively(files)
 		}
 	}
@@ -29,7 +41,7 @@ function processFilesRecursively(fileArray)
 	if(file.size > 10 * 1024 * 1024)
 	{
 		//alertCard('File too large!');
-		fileAlertCard(file.name, 'File too large!');
+		//fileAlertCard(file.name, 'File too large!');
 		gCounter += 1;
 		total += 1;
 		processFilesRecursively(fileArray);
@@ -39,7 +51,7 @@ function processFilesRecursively(fileArray)
 	var formData = new FormData();
 
 	formData.append('file[]', file, file.name);
-	fileCard(file.name, id);
+	//fileCard(file.name, id);
 
 	var request = $.ajax({
 		url: '/js',
@@ -58,16 +70,20 @@ function processFilesRecursively(fileArray)
 				        var Percentage = (current * 100)/max;
 				        var divid = '#file' + id + ' > div';
 				        $(divid).width(Percentage + '%');
-				        console.log(divid);
-				        console.log(Percentage + '%');
+				        //console.log(divid);
+				        //console.log(Percentage + '%');
 					}  
             	}, false);
             }
         	return myXhr;
 		},
+		success: function () {
+			$('#file' + id + ' > div').removeClass('indeterminate');
+			$('#file' + id + ' > div').addClass('determinate');
+		},
 		complete: function( jqXHR, textStatus) {
 			//alert(textStatus);
-			console.log(jqXHR);
+			//console.log(jqXHR);
 			var resp = jqXHR.responseText;
 			var code = resp.split(":");
 			
@@ -88,7 +104,7 @@ function processFilesRecursively(fileArray)
 		error: function(jqXHR, textStatus, errorThrown) {
 			//alert(errorThrown);
 			console.log(errorThrown);
-			console.log(textStatus);
+			//console.log(textStatus);
 			gCounter += 1;
 			total += 1;
 			processFilesRecursively(fileArray);
@@ -104,7 +120,7 @@ function fileCard(filename, id) {
 	var head = '<h5 class="truncate">';
 	var name =  filename;
 	var action = '</h5></div><div class="card-action">';
-	var progress = '<div class="progress" id="file' + id + '"><div class="determinate"';
+	var progress = '<div class="progress" id="file' + id + '"><div class="indeterminate"';
 	//var percentage = '20';
 	var progress2 = '></div></div>';
 	var actionend = '</div>';
