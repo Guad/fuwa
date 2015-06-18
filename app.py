@@ -63,8 +63,7 @@ def index():
 				else:
 					flask.flash(flask.Markup('File %s already exists at <a href="%s">%s</a>') % (secure_filename(f.filename), flask.url_for('getFile', dirname=dirname),dirname)) # Feedback to the user with the link
 			else:
-				flask.flash('Invalid filename.', flask.url_for(index))
-
+				flask.flash('Invalid filename.', flask.url_for('index'))
 		return flask.redirect(flask.url_for('index')) #Files are done uploading, go to index to receive the messages.
 	else:
 		return flask.render_template('index.html')
