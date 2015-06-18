@@ -41,8 +41,6 @@ def index():
 			As we are using javascript upload, this is left for noscript users.
 		"""
 		uploaded = flask.request.files.getlist("file[]")
-		print uploaded
-		print flask.request.form
 		for f in uploaded:
 			if secure_filename(f.filename):
 				hasher = hashlib.md5() 		
@@ -51,10 +49,12 @@ def index():
 											# We hash the file to get its filename.	   		
 											# So that we can upload two different images with the same filename,
 				hasher.update(buf)	   		# But not two same images with different filenames.
-				if flask.request.form.get('suicide'):
-					dirname = genHash(hasher.hexdigest(), 8)
+				dirname = genHash(hasher.hexdigest())
+				if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'): # Tarball
+					extension = '.'.join(f.filename.split('.')[-2:])
 				else:
-					dirname = genHash(hasher.hexdigest())
+					extension = f.filename.split('.')[-1]
+				dirname += '.' + extension
 				if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
 					os.mkdir('static/files/%s' % dirname) #Make it
 					f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
@@ -86,6 +86,11 @@ def indexJS():
 											# So that we can upload two different images with the same filename,
 				hasher.update(buf)	   		# But not two same images with different filenames.
 				dirname = genHash(hasher.hexdigest())
+				if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'): # Tarball
+					extension = '.'.join(f.filename.split('.')[-2:])
+				else:
+					extension = f.filename.split('.')[-1]
+				dirname += '.' + extension
 				if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
 					os.mkdir('static/files/%s' % dirname) #Make it
 					f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
