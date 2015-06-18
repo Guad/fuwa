@@ -50,11 +50,12 @@ def index():
 											# So that we can upload two different images with the same filename,
 				hasher.update(buf)	   		# But not two same images with different filenames.
 				dirname = genHash(hasher.hexdigest())
-				if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'): # Tarball
-					extension = '.'.join(f.filename.split('.')[-2:])
-				else:
-					extension = f.filename.split('.')[-1]
-				dirname += '.' + extension
+				if(len(f.filename.split('.')) != 1): #It has an extension
+					if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'): # Tarball
+						extension = '.'.join(f.filename.split('.')[-2:])
+					else:
+						extension = f.filename.split('.')[-1]
+					dirname += '.' + extension
 				if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
 					os.mkdir('static/files/%s' % dirname) #Make it
 					f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
@@ -86,11 +87,12 @@ def indexJS():
 											# So that we can upload two different images with the same filename,
 				hasher.update(buf)	   		# But not two same images with different filenames.
 				dirname = genHash(hasher.hexdigest())
-				if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'): # Tarball
-					extension = '.'.join(f.filename.split('.')[-2:])
-				else:
-					extension = f.filename.split('.')[-1]
-				dirname += '.' + extension
+				if(len(f.filename.split('.')) != 1): #It has an extension
+					if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'): # Tarball
+						extension = '.'.join(f.filename.split('.')[-2:])
+					else:
+						extension = f.filename.split('.')[-1]
+					dirname += '.' + extension
 				if not os.path.exists("static/files/%s" % dirname): # Check if the folder already exists
 					os.mkdir('static/files/%s' % dirname) #Make it
 					f.save('static/files/%s/%s' % (dirname, secure_filename(f.filename)))
