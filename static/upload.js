@@ -10,16 +10,16 @@ $(document).ready(function()
 		if(files.length === 0) {
 			alertCard('No files');
 		} else {
-			var ltotal = total;
-			for (i = 0; i < files.length; i++) {
+			var ltotal = total + files.length - 1;
+			for (i = files.length - 1; i >= 0; i--) {
 				var _id = i + ltotal;
 				var file = files[i];
 				if(file.size > 10 * 1024 * 1024) {
 					fileAlertCard(file.name, 'File too large!');
-					ltotal += 1;
+					ltotal -= 1;
 				} else {
 					fileCard(file.name, _id);
-					ltotal += 1;
+					ltotal -= 1;
 				}
 			}
 			processFilesRecursively(files)
