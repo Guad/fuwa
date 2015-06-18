@@ -50,24 +50,5 @@
         {% endwith %}
 
     </div>
-
-    
-    <!--
-  {% if posts %}
-    <table id="public-files">
-    <tr>
-      <th>Filename</th>
-      <th>Shortlink</th>
-      <th>Timestamp</th>
-    </tr>
-    {% for post in posts %}
-      <tr>
-        <td>{{post['FILE']}}</td>
-        <td><a href="{{ url_for('getFile', dirname=post['DIRNAME'], filename=post['FILE']) }}">{{post['DIRNAME']}}</a></td>
-        <td>{{post['TIME']}}</td>
-      </tr>
-    {% endfor %}
-  {% endif %}
-  -->
 </body>
 </html>

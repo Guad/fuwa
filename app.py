@@ -3,8 +3,8 @@ import random
 import hashlib
 import os
 from time import strftime
-from threading import Timer
 from shutil import rmtree
+from waitress import serve
 
 import flask
 from werkzeug import secure_filename
@@ -32,8 +32,8 @@ def genHash(seed, leng=5):  # Generate five letter filenames for our files
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if flask.request.method == 'POST':
-        """
+	if flask.request.method == 'POST':
+		"""
 			File upload happens here.
 			We get your filename and convert it to our hash with your extension.
 			Then we redirect to the file itself.
@@ -78,8 +78,6 @@ def indexJS():
 			the normal one acts as a fallback.
 		"""
 		uploaded = flask.request.files.getlist("file[]")
-		print uploaded
-		print flask.request.form
 		for f in uploaded:
 			if secure_filename(f.filename):
 				hasher = hashlib.md5() 		
@@ -106,14 +104,7 @@ def indexJS():
 @app.route('/<dirname>/<filename>')
 def getFile(dirname, filename=None):  # File delivery to the client
     if filename:  # Dir and filename is provided
-        if len(dirname) == 8:  # This is a suicide file
-            d = []
-            d.append(dirname)  # Timer needs a list as an argument.
-            Timer(30, destroyFile, d).start()  # He has 30 seconds to download the file
-            return flask.send_from_directory('static/files/%s' % dirname,
-                                             filename)  # Gets the file 'filename' from the directory /static/files/
-        else:
-            return flask.send_from_directory('static/files/%s' % dirname,
+        return flask.send_from_directory('static/files/%s' % dirname,
                                              filename)  # Gets the file 'filename' from the directory /static/files/
     elif not filename:  # Filename is absent - we get it for them.
         if os.path.exists('static/files/%s' % dirname):  # Does it even exist?
@@ -126,5 +117,6 @@ def getFile(dirname, filename=None):  # File delivery to the client
 
 
 if __name__ == '__main__':
-	app.debug = True
-	app.run(host="0.0.0.0") #Run our app.
+	#app.debug = True
+	#app.run(host="0.0.0.0") #Run our app.
+	serve(app, port=80)
