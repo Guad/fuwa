@@ -98,7 +98,7 @@ function processFilesRecursively(fileArray)
 }
 
 function fileCard(filename, id) {
-	var start = '<div class="row card-out"><div class="col s12 l4 offset-l4 m8 offset-m2"><div class="card ';
+	var start = '<div class="row card-out"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
 	var color = 'blue-grey ';
 	var inter = 'darken-1 z-depth-2"><div class="card-content white-text">'
 	var head = '<h5 class="truncate">';
@@ -130,7 +130,7 @@ function fileCard(filename, id) {
 }
 
 function fileAlertCard(filename, text) {
-	var start = '<div class="row card-out"><div class="col s12 l4 offset-l4 m8 offset-m2"><div class="card ';
+	var start = '<div class="row card-out"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
 	var color = 'blue-grey ';
 	var inter = 'darken-1 z-depth-2"><div class="card-content white-text">'
 	var head = '<h5 class="truncate">';
@@ -159,7 +159,7 @@ function fileAlertCard(filename, text) {
 }
 
 function alertCard(text) {
-	var start = '<div class="row card-out"><div class="col s12 l4 offset-l4 m8 offset-m2"><div class="card ';
+	var start = '<div class="row card-out"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
 	var color = 'orange ';
 	var inter = 'darken-1 z-depth-2 alert"><div class="card-content white-text">'
 	var head = '<h5 class="truncate">';
