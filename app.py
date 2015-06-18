@@ -123,6 +123,6 @@ def getFile(dirname, filename=None):  # File delivery to the client
 
 
 if __name__ == '__main__':
-	app.debug = True
-	app.run(host="0.0.0.0") #Run our app.
-	#serve(app, port=80)
+	#app.debug = True
+	#app.run(host="0.0.0.0") #Run our app.
+	serve(app, port=80)
