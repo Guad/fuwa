@@ -1,33 +1,39 @@
-import flask 
-import string, random, hashlib, os
-from werkzeug import secure_filename
+import string
+import random
+import hashlib
+import os
 from time import strftime
 from threading import Timer
 from shutil import rmtree
 
-#Load config file
-config = {}
-with open('config.ini', 'r') as file:
-	for line in file.read().splitlines():
-		line = line.split('==')
-		config[line[0]] = line[1]
+import flask
+from werkzeug import secure_filename
 
-app = flask.Flask(__name__) #Initialize our application
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024 #Set the upload limit to 10MiB
+
+# Load config file
+config = {}
+with open('config.ini', 'r') as configuration:
+    for line in configuration.read().splitlines():
+        line = line.split('==')
+        config[line[0]] = line[1]
+
+app = flask.Flask(__name__)  # Initialize our application
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # Set the upload limit to 10MiB
 app.secret_key = config['SECRET_KEY']
 
-def genHash(seed, leng=5): #Generate five letter filenames for our files
-    base = string.ascii_lowercase+string.digits 
+
+def genHash(seed, leng=5):  # Generate five letter filenames for our files
+    base = string.ascii_lowercase + string.digits
     random.seed(seed)
     hash_value = ""
-    for i in range(leng): 
+    for i in range(leng):
         hash_value += random.choice(base)
     return hash_value
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-	if flask.request.method == 'POST':
-		"""
+    if flask.request.method == 'POST':
+        """
 			File upload happens here.
 			We get your filename and convert it to our hash with your extension.
 			Then we redirect to the file itself.
@@ -98,22 +104,26 @@ def indexJS():
 
 @app.route('/<dirname>')
 @app.route('/<dirname>/<filename>')
-def getFile(dirname, filename=None): #File delivery to the client
-	if filename: #Dir and filename is provided
-		if len(dirname) == 8: #This is a suicide file
-			d = []
-			d.append(dirname) #Timer needs a list as an argument.
-			Timer(30, destroyFile, d).start() #He has 30 seconds to download the file
-			return flask.send_from_directory('static/files/%s' % (dirname), filename) #Gets the file 'filename' from the directory /static/files/
-		else:
-			return flask.send_from_directory('static/files/%s' % (dirname), filename) #Gets the file 'filename' from the directory /static/files/
-	elif not filename: #Filename is absent - we get it for them.
-		if os.path.exists('static/files/%s' % dirname): #Does it even exist?
-			files = os.listdir('static/files/%s' % dirname)
-			if files: #Check if there's any file in the directory.
-				return flask.redirect(flask.url_for('getFile', dirname=dirname, filename=files[0])) #Resend to the proper location to avoid file corruptions.
-		else:
-			flask.abort(404) # File has not been found.
+def getFile(dirname, filename=None):  # File delivery to the client
+    if filename:  # Dir and filename is provided
+        if len(dirname) == 8:  # This is a suicide file
+            d = []
+            d.append(dirname)  # Timer needs a list as an argument.
+            Timer(30, destroyFile, d).start()  # He has 30 seconds to download the file
+            return flask.send_from_directory('static/files/%s' % dirname,
+                                             filename)  # Gets the file 'filename' from the directory /static/files/
+        else:
+            return flask.send_from_directory('static/files/%s' % dirname,
+                                             filename)  # Gets the file 'filename' from the directory /static/files/
+    elif not filename:  # Filename is absent - we get it for them.
+        if os.path.exists('static/files/%s' % dirname):  # Does it even exist?
+            files = os.listdir('static/files/%s' % dirname)
+            if files:  # Check if there's any file in the directory.
+                return flask.redirect(flask.url_for('getFile', dirname=dirname, filename=files[0]))
+                # Resend to the proper location to avoid file corruptions.
+        else:
+            flask.abort(404)  # File has not been found.
+
 
 if __name__ == '__main__':
 	app.debug = True
