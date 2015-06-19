@@ -1,1 +1,5 @@
+# Bytes -compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+# Private files
 *.ini
