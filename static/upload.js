@@ -3,6 +3,7 @@ $(document).ready(function()
 	var theform = document.getElementById('mainform');
 	var fileSelect = document.getElementById('files');
 	var uploadButton = document.getElementById('sub');
+	$('.about').leanModal();
 
 	theform.onsubmit = function(event) {
 		event.preventDefault();

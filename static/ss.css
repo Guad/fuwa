@@ -34,7 +34,12 @@
   width: 60%;
 }
 
-.alert {
+.about {
+  font-size: 0.8rem;
+  color:white;
+  margin-top: 2%;
+  padding-bottom: 0%;
+  margin-bottom: 0%;
 }
 
 .card-out {
