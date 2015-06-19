@@ -34,6 +34,10 @@
   width: 60%;
 }
 
+.abouthide {
+  display: none;
+}
+
 .about {
   font-size: 0.8rem;
   color:white;
@@ -49,4 +53,17 @@
 
 body {
     background-color: #EEEEEE;
+}
+
+#toggled {
+  display: none;
+}
+
+#toggled:target {
+  display: block;
+}
+
+#close {
+  text-decoration: none;
+  color: white;
 }
