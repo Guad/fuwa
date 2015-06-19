@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>ChinkBloat</title>
+  <title>Fuwa.se</title>
   <link rel="stylesheet" href="../static/materialize/css/materialize.min.css">
   <link rel="stylesheet" href="../static/ss.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -16,14 +16,14 @@
   <div class="fileupload">
     <div class="card blue-grey darken-1 z-depth-2">
       <div class="card-content white-text" style="padding-bottom: 0%;">
-        <span class="card-title" style="font-size: 3rem;">ChinkBloat</span>
-        <p style="margin-top: 3%; margin-bottom: 3%;">Up to 10MiB of your bloat. Chinked.</p>
+        <span class="card-title" style="font-size: 3rem;">Fuwa.se</span>
+        <p style="margin-top: 3%; margin-bottom: 3%;">Up to 10MiB of your data.</p>
         <form class="cener-block" method="POST" enctype="multipart/form-data" id="mainform">
           <span class="btn btn-default btn-file waves-effect waves-light">
-            Chink
+            Select
             <input type="file" name="file[]" multiple id="files">
           </span>
-          <button class="btn btn-file waves-effect waves-light " type="submit" id="sub">Bloat
+          <button class="btn btn-file waves-effect waves-light " type="submit" id="sub">Upload
           <i class="mdi-content-send right"></i></button>
           <br/>
           <a class="waves-effect waves-light btn-flat about abouthide" href="#aboutmodal">About</a>
@@ -37,8 +37,8 @@
     <!-- MODAL BEGIN -->
     <div id="aboutmodal" class="modal modal-fixed-footer">
       <div class="modal-content">
-        <h4>What is ChinkBloat?</h4>
-        <p>ChinkBloat is a simple file hoster.</p>
+        <h4>What is Fuwa.se?</h4>
+        <p>Fuwa.se is a simple file hoster.</p>
       </div>
       <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Close</a>
@@ -46,7 +46,6 @@
     </div>
     <!-- MODAL END -->
 
-    <!-- AUTISM BEGIN -->
     <noscript>
     <div id="aboutmodalnojs">
       <div class="row">
@@ -60,15 +59,14 @@
         <div class="col s12 l6 offset-l3 m8 offset-m2">
           <div class="card blue-grey darken-1 z-depth-2">
             <div class="card-content white-text">
-              <h4>What is ChinkBloat?<span class="badge"><a id="close" href="#!">X</a></span></h4>
-              <p>ChinkBloat is a simple file hoster.</p>
+              <h4>What is Fuwa.se?<span class="badge"><a id="close" href="#!">X</a></span></h4>
+              <p>Fuwa.se is a simple file hoster.</p>
             </div>
           </div>
         </div>
       </div>
       </div>
     </noscript>
-    <!-- AUTISM END -->
 
         {% with messages = get_flashed_messages() %}
           {% if messages %}
