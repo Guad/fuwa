@@ -33,6 +33,7 @@ def getDirnameExtension(f):
     f.seek(0)
     hasher.update(buf)
     dirname = genHash(hasher.hexdigest())
+    extension = ""
     if(len(f.filename.split('.')) != 1):
         if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'):
             extension = '.'.join(f.filename.split('.')[-2:])
@@ -60,7 +61,7 @@ def handleUpload(f, js=True, api=False):
             if not api:
                 value = 'success:' + url + ':' + dirname
             else:
-                value = 'fuwa.se/' + dirname
+                value = 'https://fuwa.se/' + dirname
             # if not js, then flash
             # used to prevent flashes from showing up upon refresh
             if not js:
@@ -105,6 +106,7 @@ def postIndexAPI():
     This will handle uploads to the API, returning a JSON consisting
     of original file names and their corresponding uploaded URLs
     """
+    flash(Markup("Uploading"))
     uploaded = request.files.getlist("file[]")
     files = []
     urls = []
@@ -124,6 +126,7 @@ def indexJS():
     File upload for the js happens here.
     the normal one acts as a fallback.
     """
+    flash(Markup("Uploading"))
     uploaded = request.files.getlist("file[]")
     # handling value this way allows for multiple uploads to work
     # not that the web gui does this at the moment, but it's nice through curl
@@ -157,4 +160,4 @@ def getFile(dirname, filename=None):
 if __name__ == '__main__':
     #app.debug = True
     #app.run(host="0.0.0.0")
-    serve(app, port=80)
+    serve(app, port=8002)
