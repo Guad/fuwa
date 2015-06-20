@@ -1,9 +1,8 @@
-import string, random, hashlib, os
+import string, random, hashlib, os, json
 from time import strftime
 from shutil import rmtree
 from waitress import serve
 from flask import Flask, url_for, flash, Markup, render_template, request, redirect, abort, send_from_directory
-
 from werkzeug import secure_filename
 
 # Load config file
@@ -106,19 +105,12 @@ def postIndexAPI():
     This will handle uploads to the API, returning a JSON consisting
     of original file names and their corresponding uploaded URLs
     """
-    flash(Markup("Uploading"))
     uploaded = request.files.getlist("file[]")
-    files = []
-    urls = []
+    res = {}
     for f in uploaded:
-        files.append(str(f.filename))
         v = handleUpload(f, js=False, api=True)
-        urls.append(v)
-    res = "{"
-    for url, f in zip(urls, files):
-        res += f + ":" + url + ","
-    res = res[:-1] + "}\n"
-    return res
+        res[f.filename] = v
+    return json.dumps(res)
 
 @app.route('/js', methods=['POST'])
 def indexJS():
@@ -126,7 +118,6 @@ def indexJS():
     File upload for the js happens here.
     the normal one acts as a fallback.
     """
-    flash(Markup("Uploading"))
     uploaded = request.files.getlist("file[]")
     # handling value this way allows for multiple uploads to work
     # not that the web gui does this at the moment, but it's nice through curl
