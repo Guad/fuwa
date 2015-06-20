@@ -44,6 +44,7 @@ def getDirnameExtension(f):
 def handleUpload(f, js=True, api=False):
     """ Handles the main file upload behavior. """
     value = ""
+    jsonDict = {}
     if secure_filename(f.filename):
         # get variables
         dirname, extension = getDirnameExtension(f)
@@ -61,6 +62,9 @@ def handleUpload(f, js=True, api=False):
                 value = 'success:' + url + ':' + dirname
             else:
                 value = 'https://fuwa.se/' + dirname
+                jsonDict['status'] = 'success'
+                jsonDict['filename'] = dirname
+                jsonDict['url'] = value
             # if not js, then flash
             # used to prevent flashes from showing up upon refresh
             if not js:
@@ -71,7 +75,8 @@ def handleUpload(f, js=True, api=False):
             if not api:
                 value = 'exists:' + url + ':' + dirname
             else:
-                value = "exists"
+                jsonDict['status'] = 'error'
+                jsonDict['error'] = 'exists'
             if not js:
                 message = 'File %s already exists at <a href="%s">%s</a>'
                 flash(Markup(message) % (sfilename, url, dirname))
@@ -79,7 +84,13 @@ def handleUpload(f, js=True, api=False):
         value = 'error:filenameinvalid'
         if not js:
             flash('Invalid filename.', url_for('getIndex'))
-    return value
+        if api:
+            jsonDict['status'] = 'error'
+            jsonDict['error'] = 'invalidFilename'
+    if not api:
+        return value
+    else:
+        return jsonDict
 
 @app.route('/', methods=['GET'])
 def getIndex():
@@ -99,17 +110,18 @@ def postIndex():
         handleUpload(f, js=False)
     return redirect(url_for('getIndex'))
 
-@app.route('/upload', methods=['POST'])
+@app.route('/api', methods=['POST'])
 def postIndexAPI():
     """
     This will handle uploads to the API, returning a JSON consisting
-    of original file names and their corresponding uploaded URLs
+    of a list of uploaded files, with their respective statuses and
+    uploaded URLs.
     """
     uploaded = request.files.getlist("file[]")
-    res = {}
+    res = []
     for f in uploaded:
         v = handleUpload(f, js=False, api=True)
-        res[f.filename] = v
+        res.append(v)
     return json.dumps(res)
 
 @app.route('/js', methods=['POST'])
