@@ -1,9 +1,8 @@
-import string, random, hashlib, os
+import string, random, hashlib, os, json
 from time import strftime
 from shutil import rmtree
 from waitress import serve
 from flask import Flask, url_for, flash, Markup, render_template, request, redirect, abort, send_from_directory
-
 from werkzeug import secure_filename
 
 # Load config file
@@ -33,6 +32,7 @@ def getDirnameExtension(f):
     f.seek(0)
     hasher.update(buf)
     dirname = genHash(hasher.hexdigest())
+    extension = ""
     if(len(f.filename.split('.')) != 1):
         if('.'.join(f.filename.split('.')[-2:]) == 'tar.gz'):
             extension = '.'.join(f.filename.split('.')[-2:])
@@ -41,7 +41,7 @@ def getDirnameExtension(f):
             dirname += '.' + extension
     return [dirname, extension]
 
-def handleUpload(f, js=True):
+def handleUpload(f, js=True, api=False):
     """ Handles the main file upload behavior. """
     value = ""
     if secure_filename(f.filename):
@@ -57,7 +57,10 @@ def handleUpload(f, js=True):
 
             # value is used with /js route, otherwise it's ignored
             url = url_for('getFile', dirname=dirname)
-            value = 'success:' + url + ':' + dirname
+            if not api:
+                value = 'success:' + url + ':' + dirname
+            else:
+                value = 'https://fuwa.se/' + dirname
             # if not js, then flash
             # used to prevent flashes from showing up upon refresh
             if not js:
@@ -65,7 +68,10 @@ def handleUpload(f, js=True):
                 flash(Markup(message) % (sfilename, url, dirname))
         else:
             url = url_for('getFile', dirname=dirname)
-            value = 'exists:' + url + ':' + dirname
+            if not api:
+                value = 'exists:' + url + ':' + dirname
+            else:
+                value = "exists"
             if not js:
                 message = 'File %s already exists at <a href="%s">%s</a>'
                 flash(Markup(message) % (sfilename, url, dirname))
@@ -92,6 +98,19 @@ def postIndex():
     for f in uploaded:
         handleUpload(f, js=False)
     return redirect(url_for('getIndex'))
+
+@app.route('/upload', methods=['POST'])
+def postIndexAPI():
+    """
+    This will handle uploads to the API, returning a JSON consisting
+    of original file names and their corresponding uploaded URLs
+    """
+    uploaded = request.files.getlist("file[]")
+    res = {}
+    for f in uploaded:
+        v = handleUpload(f, js=False, api=True)
+        res[f.filename] = v
+    return json.dumps(res)
 
 @app.route('/js', methods=['POST'])
 def indexJS():
@@ -132,4 +151,4 @@ def getFile(dirname, filename=None):
 if __name__ == '__main__':
     #app.debug = True
     #app.run(host="0.0.0.0")
-    serve(app, port=80)
+    serve(app, port=8002)

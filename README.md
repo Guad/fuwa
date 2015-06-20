@@ -1,2 +1,2 @@
-# chinkfile
-File sharer made by autists from a vietnamese animations online forum.
+# Fuwa.se
+A file sharer for all
