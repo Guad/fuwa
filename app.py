@@ -41,7 +41,7 @@ def getDirnameExtension(f):
             dirname += '.' + extension
     return [dirname, extension]
 
-def handleUpload(f, js=True):
+def handleUpload(f, js=True, api=False):
     """ Handles the main file upload behavior. """
     value = ""
     if secure_filename(f.filename):
@@ -57,7 +57,10 @@ def handleUpload(f, js=True):
 
             # value is used with /js route, otherwise it's ignored
             url = url_for('getFile', dirname=dirname)
-            value = 'success:' + url + ':' + dirname
+            if not api:
+                value = 'success:' + url + ':' + dirname
+            else:
+                value = 'fuwa.se/' + dirname
             # if not js, then flash
             # used to prevent flashes from showing up upon refresh
             if not js:
@@ -65,7 +68,10 @@ def handleUpload(f, js=True):
                 flash(Markup(message) % (sfilename, url, dirname))
         else:
             url = url_for('getFile', dirname=dirname)
-            value = 'exists:' + url + ':' + dirname
+            if not api:
+                value = 'exists:' + url + ':' + dirname
+            else:
+                value = "exists"
             if not js:
                 message = 'File %s already exists at <a href="%s">%s</a>'
                 flash(Markup(message) % (sfilename, url, dirname))
@@ -92,6 +98,25 @@ def postIndex():
     for f in uploaded:
         handleUpload(f, js=False)
     return redirect(url_for('getIndex'))
+
+@app.route('/upload', methods=['POST'])
+def postIndexAPI():
+    """
+    This will handle uploads to the API, returning a JSON consisting
+    of original file names and their corresponding uploaded URLs
+    """
+    uploaded = request.files.getlist("file[]")
+    files = []
+    urls = []
+    for f in uploaded:
+        files.append(str(f.filename))
+        v = handleUpload(f, js=False, api=True)
+        urls.append(v)
+    res = "{"
+    for url, f in zip(urls, files):
+        res += f + ":" + url + ","
+    res = res[:-1] + "}\n"
+    return res
 
 @app.route('/js', methods=['POST'])
 def indexJS():
