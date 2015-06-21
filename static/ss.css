@@ -67,3 +67,7 @@ body {
   text-decoration: none;
   color: white;
 }
+
+.noscript-button {
+  color: white;
+}
