@@ -3,8 +3,8 @@ $(document).ready(function()
 	var theform = document.getElementById('mainform');
 	var fileSelect = document.getElementById('files');
 	var uploadButton = document.getElementById('sub');
-	$('.abouthide').show(); //If user has noscript, 2 buttons won't show
-	$('.about').leanModal();
+	$('#button-about').attr('href', '#aboutmodal');
+	$('#button-about').leanModal();
 
 	theform.onsubmit = function(event) {
 		event.preventDefault();

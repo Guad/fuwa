@@ -28,14 +28,11 @@
   justify-content: center;
   /*width: 400px;*/
 }
+
 #public-files {
   padding: 30%;
   margin: 30%;
   width: 60%;
-}
-
-.abouthide {
-  display: none;
 }
 
 .about {
