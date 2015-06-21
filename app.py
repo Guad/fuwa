@@ -38,7 +38,7 @@ def getDirnameExtension(f):
             extension = '.'.join(f.filename.split('.')[-2:])
         else:
             extension = f.filename.split('.')[-1]
-            dirname += '.' + extension
+        dirname += '.' + extension
     return [dirname, extension]
 
 def handleUpload(f, js=True, api=False):
