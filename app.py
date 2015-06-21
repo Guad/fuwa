@@ -13,7 +13,7 @@ with open('config.ini', 'r') as configuration:
         config[line[0]] = line[1]
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MiB upload limit
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MiB upload limit
 app.secret_key = config['SECRET_KEY']
 
 def genHash(seed, leng=5):
