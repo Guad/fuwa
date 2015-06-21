@@ -13,7 +13,7 @@ with open('config.ini', 'r') as configuration:
         config[line[0]] = line[1]
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MiB upload limit
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MiB upload limit
 app.secret_key = config['SECRET_KEY']
 
 def genHash(seed, leng=5):
@@ -110,7 +110,7 @@ def postIndex():
         handleUpload(f, js=False)
     return redirect(url_for('getIndex'))
 
-@app.route('/api', methods=['POST'])
+@app.route('/api/upload', methods=['POST'])
 def postIndexAPI():
     """
     This will handle uploads to the API, returning a JSON consisting

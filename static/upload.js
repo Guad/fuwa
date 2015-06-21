@@ -16,7 +16,7 @@ $(document).ready(function()
 			for (i = files.length - 1; i >= 0; i--) {
 				var _id = i + ltotal;
 				var file = files[i];
-				if(file.size > 10 * 1024 * 1024) {
+				if(file.size > 50 * 1024 * 1024) {
 					fileAlertCard(file.name, 'File too large!');
 					ltotal -= 1;
 				} else {
