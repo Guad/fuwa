@@ -110,7 +110,7 @@ def postIndex():
         handleUpload(f, js=False)
     return redirect(url_for('getIndex'))
 
-@app.route('/api', methods=['POST'])
+@app.route('/api/upload', methods=['POST'])
 def postIndexAPI():
     """
     This will handle uploads to the API, returning a JSON consisting
