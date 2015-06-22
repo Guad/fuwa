@@ -15,12 +15,51 @@ $(document).ready(function()
         $('#sub').removeClass('waves-effect waves-light');
     }
 
+    $('#files').click(function() {
+        if(uploadInProgress) {
+            return false;
+        }
+    });
+
+    $('#files').change(function(){
+        var fileSelect = document.getElementById('files');    
+        if($('#files').prop('files').length > 0) {
+                $('#sub').removeClass('disabled');
+                $('#sub').addClass('waves-effect waves-light');
+            } else {
+                $('#sub').addClass('disabled');
+                $('#sub').removeClass('waves-effect waves-light');
+            }
+        var delay = 0;
+        if(onStandBy.length > 0) { delay = 500; }
+
+        for (var i = 0; i < onStandBy.length; i++) {
+            $('#file'+onStandBy[i]).fadeOut(500);
+        };
+        onStandBy.length = 0;
+        setTimeout(function() {
+        var _ltotal = total;
+            for (var i = fileSelect.files.length - 1; i >= 0; i--) {
+                var _id = i + _ltotal;
+                fileAlertCard(fileSelect.files[i].name, 'on stand by', _id);
+                $('#file' + _id + ' > div > div').removeClass('blue-grey darken-1');
+                $('#file' + _id + ' > div > div').addClass('blue darken-3');
+                onStandBy.push(_id);
+            }
+        }, delay);
+    });
+
     theform.onsubmit = function(event) {
         event.preventDefault();
         var files = fileSelect.files;
-        if(files.length > 0) {
+        if(files.length > 0 && !uploadInProgress) {
             var ltotal = total;
             onStandBy.length = 0;
+            $('#sub').addClass('disabled');
+            $('#sub').removeClass('waves-effect waves-light');
+            $('#select-button').removeClass('waves-effect waves-light');
+            $('#select-button').addClass('disabled');
+            uploadInProgress = true;
             for (i = files.length - 1; i >= 0; i--) {
                 var _id = i + ltotal;
                 var file = files[i];
@@ -41,43 +80,22 @@ $(document).ready(function()
 });
 //Card action -> #file > div > div > .card-action
 var onStandBy = [];
-function showFiles(){
-    var fileSelect = document.getElementById('files');
-    if($('#files').prop('files').length > 0) {
-            $('#sub').removeClass('disabled');
-            $('#sub').addClass('waves-effect waves-light');
-        } else {
-            $('#sub').addClass('disabled');
-            $('#sub').removeClass('waves-effect waves-light');
-        }
-    var delay = 0;
-    if(onStandBy.length > 0) { delay = 500; }
+var uploadInProgress = false;
 
-    for (var i = 0; i < onStandBy.length; i++) {
-        $('#file'+onStandBy[i]).fadeOut(500);
-    };
-    onStandBy.length = 0;
-    setTimeout(function() {
-    var _ltotal = total;
-        for (var i = fileSelect.files.length - 1; i >= 0; i--) {
-            var _id = i + _ltotal;
-            fileAlertCard(fileSelect.files[i].name, 'on stand by', _id);
-            $('#file' + _id + ' > div > div').removeClass('blue-grey darken-1');
-            $('#file' + _id + ' > div > div').addClass('blue darken-3');
-            onStandBy.push(_id);
-        }
-    }, delay);
-}
 
 var fadeTime = 2000;
 var gCounter = 0;
 var total = 0;
+
 function processFilesRecursively(fileArray)
 {
     if(gCounter >= fileArray.length) {
+        uploadInProgress = false;
         $('#files').val('');
         $('#sub').addClass('disabled');
         $('#sub').removeClass('waves-effect waves-light');
+        $('#select-button').addClass('waves-effect waves-light');
+        $('#select-button').removeClass('disabled');
         gCounter = 0;
         total += 1;
         return 0;
