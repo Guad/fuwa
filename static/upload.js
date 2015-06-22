@@ -50,6 +50,9 @@ var total = 0;
 function processFilesRecursively(fileArray)
 {
     if(gCounter >= fileArray.length) {
+        $('#files').val('');
+        $('#sub').addClass('disabled');
+        $('#sub').removeClass('waves-effect waves-light');
         gCounter = 0;
         total += 1
         return 0;
