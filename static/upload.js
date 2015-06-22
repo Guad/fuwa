@@ -6,12 +6,28 @@ $(document).ready(function()
     $('#button-about').attr('href', '#aboutmodal');
     $('#button-about').leanModal();
 
+    if($('#files').prop('files').length > 0) {
+        $('#sub').removeClass('disabled');
+        $('#sub').addClass('waves-effect waves-light');
+    } else {
+        $('#sub').addClass('disabled');
+        $('#sub').removeClass('waves-effect waves-light');
+    }
+
+    $('#files').change(function() {
+        if($('#files').prop('files').length > 0) {
+            $('#sub').removeClass('disabled');
+            $('#sub').addClass('waves-effect waves-light');
+        } else {
+            $('#sub').addClass('disabled');
+            $('#sub').removeClass('waves-effect waves-light');
+        }
+    });
+
     theform.onsubmit = function(event) {
         event.preventDefault();
         var files = fileSelect.files;
-        if(files.length === 0) {
-            alertCard('No files');
-        } else {
+        if(files.length > 0) {
             var ltotal = total + files.length - 1;
             for (i = files.length - 1; i >= 0; i--) {
                 var _id = i + ltotal;
@@ -40,7 +56,7 @@ function processFilesRecursively(fileArray)
     } else {
     var id = gCounter + total;
     var file = fileArray[gCounter];
-    if(file.size > 10 * 1024 * 1024)
+    if(file.size > 50 * 1024 * 1024)
     {
         gCounter += 1;
         total += 1;
