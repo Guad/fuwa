@@ -19,24 +19,20 @@ $(document).ready(function()
         event.preventDefault();
         var files = fileSelect.files;
         if(files.length > 0) {
-            var ltotal = total + files.length - 1;
+            var ltotal = total;
             onStandBy.length = 0;
             for (i = files.length - 1; i >= 0; i--) {
                 var _id = i + ltotal;
                 var file = files[i];
                 if(file.size > 50 * 1024 * 1024) {
-                    //fileAlertCard(file.name, 'File too large!', _id);
                     $('#file' + _id + ' > div > div').removeClass('blue darken-3');
                     $('#file' + _id + ' > div > div').addClass('blue-grey darken-1');
                     $('#file' + _id + ' > div > div > .card-action > a').text('File too large!');
-                    ltotal -= 1;
                 } else {
-                    //fileCard(file.name, _id);
                     $('#file' + _id + ' > div > div').removeClass('blue darken-3');
                     $('#file' + _id + ' > div > div').addClass('blue-grey darken-1');
                     $('#file' + _id + ' > div > div > .card-action > a').fadeOut(100);
                     $('#file' + _id + ' > div > div > .card-action > .progress').show();
-                    ltotal -= 1;
                 }
             }
             processFilesRecursively(files)
@@ -46,6 +42,7 @@ $(document).ready(function()
 //Card action -> #file > div > div > .card-action
 var onStandBy = [];
 function showFiles(){
+    var fileSelect = document.getElementById('files');
     if($('#files').prop('files').length > 0) {
             $('#sub').removeClass('disabled');
             $('#sub').addClass('waves-effect waves-light');
@@ -53,20 +50,23 @@ function showFiles(){
             $('#sub').addClass('disabled');
             $('#sub').removeClass('waves-effect waves-light');
         }
+    var delay = 0;
+    if(onStandBy.length > 0) { delay = 500; }
+
     for (var i = 0; i < onStandBy.length; i++) {
         $('#file'+onStandBy[i]).fadeOut(500);
     };
-
     onStandBy.length = 0;
-    var ltotal = total + document.getElementById('files').files.length - 1;
-    for (var i = document.getElementById('files').files.length - 1; i >= 0; i--) {
-        var _id = i + ltotal;
-        fileAlertCard(document.getElementById('files').files[i].name, 'on stand by', _id);
-        $('#file' + _id + ' > div > div').removeClass('blue-grey darken-1');
-        $('#file' + _id + ' > div > div').addClass('blue darken-3');
-        onStandBy.push(_id);
-        ltotal -= 1;
-    }
+    setTimeout(function() {
+    var _ltotal = total;
+        for (var i = fileSelect.files.length - 1; i >= 0; i--) {
+            var _id = i + _ltotal;
+            fileAlertCard(fileSelect.files[i].name, 'on stand by', _id);
+            $('#file' + _id + ' > div > div').removeClass('blue-grey darken-1');
+            $('#file' + _id + ' > div > div').addClass('blue darken-3');
+            onStandBy.push(_id);
+        }
+    }, delay);
 }
 
 var fadeTime = 2000;
@@ -79,10 +79,10 @@ function processFilesRecursively(fileArray)
         $('#sub').addClass('disabled');
         $('#sub').removeClass('waves-effect waves-light');
         gCounter = 0;
-        total += 1
+        total += 1;
         return 0;
     } else {
-    var id = gCounter + total;
+    var id = total;
     var file = fileArray[gCounter];
     if(file.size > 50 * 1024 * 1024)
     {
@@ -121,8 +121,6 @@ function processFilesRecursively(fileArray)
             return myXhr;
         },
         complete: function( jqXHR, textStatus) {
-            //alert(textStatus);
-            //console.log(jqXHR);
             var resp = jqXHR.responseText;
             var code = resp.split(":");
             var feedback = '';
@@ -136,7 +134,12 @@ function processFilesRecursively(fileArray)
                 feedback = '<p>Invalid filename.</p>';
             }
 
-            $(feedback).insertAfter('#file' + id + ' > div > div > .card-action > .progress')
+            setTimeout(function() {
+                var toinsert = $(feedback);
+                toinsert.hide();
+                toinsert.insertAfter('#file' + id + ' > div > div > .card-action > .progress');
+                toinsert.fadeIn(1000);
+            }, 990);
             $('#file' + id + ' > div > div > .card-action > .progress').fadeOut(1000);
             gCounter += 1;
             total += 1;
