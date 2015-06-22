@@ -27,8 +27,8 @@ def genHash(seed, leng=5):
 
 def getDirnameExtension(f):
     """ Gets the dirname and extension of the file. """
-    hasher = hashlib.md5() 		
-    buf = f.read()		   		
+    hasher = hashlib.md5()
+    buf = f.read()
     f.seek(0)
     hasher.update(buf)
     dirname = genHash(hasher.hexdigest())
