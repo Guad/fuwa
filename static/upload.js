@@ -151,37 +151,6 @@ function processFilesRecursively(fileArray)
     });
     }
 }
-
-function fileCard(filename, id) {
-    var start = '<div class="row card-out" id="file' + id + '"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
-    var color = 'blue-grey ';
-    var inter = 'darken-1 z-depth-2"><div class="card-content white-text">'
-    var head = '<h5 class="truncate">';
-    var name =  filename;
-    var action = '</h5></div><div class="card-action">';
-    var progress = '<div class="progress"><div class="indeterminate"';
-    var progress2 = '></div></div>';
-    var actionend = '</div>';
-    var inter2 = '';
-    var end = '</div></div></div>';
-
-    var div = $(start +
-                color +
-                inter +
-                head +
-                name +
-                action +
-                progress +
-                progress2 +
-                actionend +
-                inter2 +
-                end
-                );
-    
-    div.hide();
-    div.insertAfter('#afterthis');
-    div.fadeIn(fadeTime);
-}
 //Card action -> #file > div > div > .card-action
 function fileAlertCard(filename, text, id) {
     var start = '<div class="row card-out" id="file' + id + '"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
