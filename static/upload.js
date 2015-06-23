@@ -138,7 +138,7 @@ function processFilesRecursively(fileArray)
             }
             return myXhr;
         },
-        complete: function( jqXHR, textStatus) {
+        complete: function(jqXHR, textStatus) {
             var resp = jqXHR.responseText;
             var code = resp.split(":");
             var feedback = '';
@@ -148,8 +148,14 @@ function processFilesRecursively(fileArray)
             else if(code[0] === 'exists') {
                 feedback = '<span class="badge"><a target="_blank" href="' + code[1] + '">' + code[2] + '</a></span><a>Duplicate!</a>';
             }
-            else if(code[0] === 'error') {
-                feedback = '<p>Invalid filename.</p>';
+            else if(code[0] === 'error' && code[1] === 'filenameinvalid') {
+                feedback = '<a>Invalid filename.</a>';
+            } 
+            else if(code[0] === 'banned') {
+                feedback = '<a>File is banned</a>'
+            }
+            else if(code[0] === 'virus') {
+                feedback = '<a>Virus detected. File has been banned.</a>'
             }
 
             setTimeout(function() {
