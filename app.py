@@ -229,6 +229,14 @@ def getFile(dirname, filename=None):
         else:
             abort(404)
 
+@app.errorhandler(404) # Not found
+def fileNotFound(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(410) # Removed
+def fileNotFound(e):
+    return render_template('410.html'), 410
+
 if __name__ == '__main__':
     #app.debug = True
     #app.run(host="0.0.0.0")
