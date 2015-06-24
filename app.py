@@ -4,6 +4,7 @@ from shutil import rmtree
 from waitress import serve
 from flask import Flask, url_for, flash, Markup, render_template, request, redirect, abort, send_from_directory
 from werkzeug import secure_filename
+from subprocess import call
 
 # Load config file
 config = {}
@@ -76,7 +77,10 @@ def checkFileName(fname):
     return not any(d['filename'] == fname for d in banlist)
 
 def scanForViruses(fpath): # returns: true for clean file and false for virus
-    return True # Not implemented yet
+    # Uses clamd, you must have it installed for this to work.
+    call(["clamscan", "--infected", "--remove", fpath])
+    # If the file was removed, return False(There is a virus), otherwise True
+    return os.path.exists(fpath)
 
 def handleUpload(f, js=True, api=False):
     """ Handles the main file upload behavior. """
