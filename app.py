@@ -93,7 +93,7 @@ def checkFileName(fname):
 
 def scanForViruses(fpath): # returns: true for clean file and false for virus
     # Uses clamd, you must have it installed for this to work.
-    call(["clamscan", "--infected", "--remove", fpath])
+    call(["clamscan", "--quiet","--infected", "--remove", fpath])
     # If the file was removed, return False(There is a virus), otherwise True
     return os.path.exists(fpath)
 
