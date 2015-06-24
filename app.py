@@ -16,14 +16,14 @@ with open('config.ini', 'r') as configuration:
 Load banlist, you must create an empty file named
 'banlist.csv' in the root directory first.
 """
-dangerousExtensions = ['dll', 'exe']
+dangerousExtensions = ['dll', 'exe', 'com']
 banlist = []
 with open('banlist.csv', 'r') as bans:
     for line in bans.read().splitlines():
         if len(line) == 0: 
             continue
         line = line.split(',');
-        banlist.append({'hash':line[0], 'reason':line[1]})
+        banlist.append({'hash':line[0], 'filename':line[1], 'reason':line[2]})
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MiB upload limit
@@ -63,14 +63,17 @@ def writeBanlist():
     """
     with open('banlist.csv', 'w') as bans:
         for pair in banlist:
-            bans.write(pair['hash'] + ',' + pair['reason'] + '\n')
+            bans.write(pair['hash'] + ',' + pair['filename'] + ',' + pair['reason'] + '\n')
 
-def addToBanlist(fhash, reason):
-    banlist.append({'hash':fhash, 'reason':reason})
+def addToBanlist(fhash, fname, reason):
+    banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
     writeBanlist()
 
 def checkFileHash(fhash): # returns: true for clean and false for dirty.
     return not any(d['hash'] == fhash for d in banlist)
+
+def checkFileName(fname):
+    return not any(d['filename'] == fname for d in banlist)
 
 def scanForViruses(fpath): # returns: true for clean file and false for virus
     return True # Not implemented yet
@@ -110,7 +113,10 @@ def handleUpload(f, js=True, api=False):
                         message = 'Uploaded file %s to <a href="%s">%s</a>'
                         flash(Markup(message) % (sfilename, url, dirname))
                 else: # Virus detected
-                    addToBanlist(fhash, 'virus')
+                    dirtolog = dirname
+                    if(len(extension) != 0):
+                        dirtolog = dirname.rstrip('.' + extension)
+                    addToBanlist(fhash, dirtolog, 'virus')
                     print('[VIRUS DETECTED] in file "%s", added to banlist and removed.' % sfilename)
                     rmtree('static/files/%s' % dirname) # #scary
                     if not api:
@@ -208,6 +214,8 @@ def getFile(dirname, filename=None):
     """
     Flie delivery to the client.
     """
+    if not checkFileName(dirname.split('.')[0]):
+        abort(410)
     if filename:
         # If dir and filename  is provided, serve it directly
         return send_from_directory('static/files/%s' % dirname, filename)
