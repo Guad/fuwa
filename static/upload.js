@@ -77,6 +77,10 @@ $(document).ready(function()
             processFilesRecursively(files)
         }
     }
+    document.getElementById('dropzone').addEventListener('dragenter', eventFileDropIn, false);
+    document.getElementById('dropzone').addEventListener('dragleave', eventFileDropOut, false);
+    document.getElementById('dropzone').addEventListener('dragover', eventFileDragEnter, false);
+    document.getElementById('dropzone').addEventListener('drop', eventFileDropped, false);
 });
 //Card action -> #file > div > div > .card-action
 var onStandBy = [];
@@ -235,3 +239,52 @@ function alertCard(text) {
     div.fadeIn(fadeTime);
     div.delay(4000).fadeOut(fadeTime);
 }
+
+function eventFileDropIn(e) {
+    $('.fileupload > div').removeClass('darken-1');
+    $('.fileupload > div').addClass('lighten-1');
+    $('#dropzone > .card-title').text('Drop here!');
+}
+
+function eventFileDropOut(e) {
+    $('.fileupload > div').removeClass('lighten-1');
+    $('.fileupload > div').addClass('darken-1');
+    $('#dropzone > .card-title').text('Fuwa.se');
+}
+
+function eventFileDropped(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    if(uploadInProgress) return false;
+    $('.fileupload > div').removeClass('lighten-1');
+    $('.fileupload > div').addClass('darken-1');
+    $('#dropzone > .card-title').text('Fuwa.se');
+    var files = e.dataTransfer.files;
+    var ltotal = total;
+    onStandBy.length = 0;
+    $('#sub').addClass('disabled');
+    $('#sub').removeClass('waves-effect waves-light');
+    $('#select-button').removeClass('waves-effect waves-light');
+    $('#select-button').addClass('disabled');
+    uploadInProgress = true;
+    for (i = files.length - 1; i >= 0; i--) {
+        var _id = i + ltotal;
+        var file = files[i];
+        fileAlertCard(files[i].name, 'on stand by', _id);
+        if(file.size > 50 * 1024 * 1024) {
+            $('#file' + _id + ' > div > div > .card-action > a').text('File too large!');
+        } else {
+            $('#file' + _id + ' > div > div > .card-action > a').fadeOut(100);
+            $('#file' + _id + ' > div > div > .card-action > .progress').show();
+        }
+    }
+    processFilesRecursively(files)
+  }
+
+  function eventFileDragEnter(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    $('.fileupload > div').removeClass('darken-1');
+    $('.fileupload > div').addClass('lighten-1');
+    $('#dropzone > .card-title').text('Drop here!');
+  }
