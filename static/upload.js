@@ -149,7 +149,7 @@ function processFilesRecursively(fileArray)
                 feedback = '<span class="badge"><a target="_blank" href="' + code[1] + '">' + code[2] + '</a></span><a>Duplicate!</a>';
             }
             else if(code[0] === 'error' && code[1] === 'filenameinvalid') {
-                feedback = '<a>Invalid filename.</a>';
+                feedback = '<a>Invalid filename or banned extension.</a>';
             } 
             else if(code[0] === 'banned') {
                 feedback = '<a>File is banned</a>'

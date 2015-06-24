@@ -15,6 +15,12 @@ with open('config.ini', 'r') as configuration:
         config[line[0]] = line[1]
 
 dangerousExtensions = ['dll', 'exe', 'com']
+bannedExtensions = ['ade', 'adp', 'bat', 'chm', 'cmd', 'com',
+                    'cpl', 'exe', 'hta', 'ins', 'isp', 'jse',
+                    'lib', 'lnk', 'mde', 'msc', 'msp', 'mst',
+                    'pif', 'scr', 'sct', 'shb', 'sys', 'vb',
+                    'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh']
+BANEXTENSIONS = False # Main switch
 banlist = []
 def reloadBanlist():
     """
@@ -92,15 +98,21 @@ def scanForViruses(fpath): # returns: true for clean file and false for virus
     # Uses clamd, you must have it installed for this to work.
     call(["clamscan", "--infected", "--remove", fpath])
     # If the file was removed, return False(There is a virus), otherwise True
-    return os.path.exists(fpath)
+    if not os.path.exists(fpath):
+        dirtolog = dirname
+        if(len(extension) != 0):
+            dirtolog = dirname.rstrip('.' + extension)
+        addToBanlist(fhash, dirtolog, 'virus')
+        print('[VIRUS DETECTED] in file "%s", added to banlist and removed.' % sfilename)
+        rmtree('static/files/%s' % dirname) # #scary
 
 def handleUpload(f, js=True, api=False):
     """ Handles the main file upload behavior. """
     value = ""
     jsonDict = {}
-    if secure_filename(f.filename):
+    dirname, extension, fhash = getDirnameExtension(f)
+    if secure_filename(f.filename) and (not extension in bannedExtensions or not BANEXTENSIONS):
         # get variables
-        dirname, extension, fhash = getDirnameExtension(f)
         sfilename = secure_filename(f.filename)
         if checkFileHash(fhash):
             # do the file saving
@@ -108,41 +120,26 @@ def handleUpload(f, js=True, api=False):
                 # if it it's not there, make the directory and save the file
                 os.mkdir('static/files/%s' % dirname)
                 f.save('static/files/%s/%s' % (dirname, sfilename))
-                notAVirus = True
                 if(extension in dangerousExtensions):
-                    notAVirus = scanForViruses('static/files/%s/%s' % (dirname, sfilename))
-                if notAVirus:
-                    print('Uploaded file "%s" to %s' % (sfilename, dirname))
+                    t = Timer(60, scanForViruses, ['static/files/%s/%s' % (dirname, sfilename)])
+                    t.daemon = True
+                    t.start()
+                print('Uploaded file "%s" to %s' % (sfilename, dirname))
 
-                    # value is used with /js route, otherwise it's ignored
-                    url = url_for('getFile', dirname=dirname)
-                    if not api:
-                        value = 'success:' + url + ':' + dirname
-                    else:
-                        value = 'https://fuwa.se/' + dirname
-                        jsonDict['status'] = 'success'
-                        jsonDict['filename'] = dirname
-                        jsonDict['url'] = value
-                    # if not js, then flash
-                    # used to prevent flashes from showing up upon refresh
-                    if not js:
-                        message = 'Uploaded file %s to <a href="%s">%s</a>'
-                        flash(Markup(message) % (sfilename, url, dirname))
-                else: # Virus detected
-                    dirtolog = dirname
-                    if(len(extension) != 0):
-                        dirtolog = dirname.rstrip('.' + extension)
-                    addToBanlist(fhash, dirtolog, 'virus')
-                    print('[VIRUS DETECTED] in file "%s", added to banlist and removed.' % sfilename)
-                    rmtree('static/files/%s' % dirname) # #scary
-                    if not api:
-                        value = 'virus'
-                    else:
-                        jsonDict['status'] = 'error'
-                        jsonDict['error'] = 'virus'
-                    if not js:
-                        message = 'Virus detected in file %s. It has been removed and added to the banlist.'
-                        flash(Markup(message) % (sfilename))
+                # value is used with /js route, otherwise it's ignored
+                url = url_for('getFile', dirname=dirname)
+                if not api:
+                    value = 'success:' + url + ':' + dirname
+                else:
+                    value = 'https://fuwa.se/' + dirname
+                    jsonDict['status'] = 'success'
+                    jsonDict['filename'] = dirname
+                    jsonDict['url'] = value
+                # if not js, then flash
+                # used to prevent flashes from showing up upon refresh
+                if not js:
+                    message = 'Uploaded file %s to <a href="%s">%s</a>'
+                    flash(Markup(message) % (sfilename, url, dirname))
             else:
                 url = url_for('getFile', dirname=dirname)
                 if not api:
