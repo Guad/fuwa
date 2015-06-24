@@ -23,6 +23,8 @@ with open(sys.argv[1], 'r') as fin:
         f = f.rstrip() 
         if os.path.isdir("../static/files/" + f):
             f = "../static/files/" + f + "/" + os.listdir("../static/files/" + f)[0]
+        else:
+            f = "../static/files/" + f
         fhash = getmd5(f)
         fname = genHash(fhash)
         reason = sys.argv[2]
