@@ -22,7 +22,7 @@ bannedExtensions = ['ade', 'adp', 'bat', 'chm', 'cmd', 'com',
                     'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh']
 BANEXTENSIONS = False # Main switch
 banlist = []
-def reloadBanlist():
+def reloadBanlist(update=True):
     """
     Load banlist, you must create an empty file named
     'banlist.csv' in the root directory first.
@@ -39,9 +39,11 @@ def reloadBanlist():
             line = line.split(',');
             banlist.append({'hash':line[0], 'filename':line[1], 'reason':line[2]})
     print('[%s] Banlist reload complete. Found %i entries.' % (strftime('%H:%M:%S'), entries))
-    tim = Timer(60 * 30, reloadBanlist) # every 30 minutes
-    tim.daemon = True
-    tim.start()
+    if update:
+        tim = Timer(60 * 30, reloadBanlist) # every 30 minutes
+        tim.daemon = True
+        tim.start()
+
 reloadBanlist()
 
 app = Flask(__name__)
@@ -85,6 +87,7 @@ def writeBanlist():
             bans.write(pair['hash'] + ',' + pair['filename'] + ',' + pair['reason'] + '\n')
 
 def addToBanlist(fhash, fname, reason):
+    reloadBanlist(update=False)
     banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
     writeBanlist()
 
@@ -96,7 +99,7 @@ def checkFileName(fname):
 
 def scanForViruses(fpath): # returns: true for clean file and false for virus
     # Uses clamd, you must have it installed for this to work.
-    call(["clamscan", "--infected", "--remove", fpath])
+    call(["clamscan", "--quiet","--infected", "--remove", fpath])
     # If the file was removed, return False(There is a virus), otherwise True
     if not os.path.exists(fpath):
         dirtolog = dirname
