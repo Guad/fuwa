@@ -16,7 +16,7 @@ with open('config.ini', 'r') as configuration:
 
 dangerousExtensions = ['dll', 'exe', 'com']
 banlist = []
-def reloadBanlist():
+def reloadBanlist(update=True):
     """
     Load banlist, you must create an empty file named
     'banlist.csv' in the root directory first.
@@ -33,9 +33,11 @@ def reloadBanlist():
             line = line.split(',');
             banlist.append({'hash':line[0], 'filename':line[1], 'reason':line[2]})
     print('[%s] Banlist reload complete. Found %i entries.' % (strftime('%H:%M:%S'), entries))
-    tim = Timer(60 * 30, reloadBanlist) # every 30 minutes
-    tim.daemon = True
-    tim.start()
+    if update:
+        tim = Timer(60 * 30, reloadBanlist) # every 30 minutes
+        tim.daemon = True
+        tim.start()
+
 reloadBanlist()
 
 app = Flask(__name__)
@@ -81,6 +83,7 @@ def writeBanlist():
 def addToBanlist(fhash, fname, reason):
     banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
     writeBanlist()
+    reloadBanlist(update=False)
 
 def checkFileHash(fhash): # returns: true for clean and false for dirty.
     return not any(d['hash'] == fhash for d in banlist)
