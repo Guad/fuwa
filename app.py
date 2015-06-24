@@ -5,6 +5,7 @@ from waitress import serve
 from flask import Flask, url_for, flash, Markup, render_template, request, redirect, abort, send_from_directory
 from werkzeug import secure_filename
 from subprocess import call
+from threading import Timer
 
 # Load config file
 config = {}
@@ -13,18 +14,29 @@ with open('config.ini', 'r') as configuration:
         line = line.split('==')
         config[line[0]] = line[1]
 
-"""
-Load banlist, you must create an empty file named
-'banlist.csv' in the root directory first.
-"""
 dangerousExtensions = ['dll', 'exe', 'com']
 banlist = []
-with open('banlist.csv', 'r') as bans:
-    for line in bans.read().splitlines():
-        if len(line) == 0: 
-            continue
-        line = line.split(',');
-        banlist.append({'hash':line[0], 'filename':line[1], 'reason':line[2]})
+def reloadBanlist():
+    """
+    Load banlist, you must create an empty file named
+    'banlist.csv' in the root directory first.
+    """
+    global banlist
+    print('[%s] Starting banlist reload.' % strftime('%H:%M:%S'))
+    banlist = []
+    entries = 0
+    with open('banlist.csv', 'r') as bans:
+        for line in bans.read().splitlines():
+            if len(line) == 0: 
+                continue
+            entries += 1
+            line = line.split(',');
+            banlist.append({'hash':line[0], 'filename':line[1], 'reason':line[2]})
+    print('[%s] Banlist reload complete. Found %i entries.' % (strftime('%H:%M:%S'), entries))
+    tim = Timer(60 * 30, reloadBanlist) # every 30 minutes
+    tim.daemon = True
+    tim.start()
+reloadBanlist()
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MiB upload limit
@@ -232,6 +244,14 @@ def getFile(dirname, filename=None):
                 return redirect(url_for('getFile', dirname=dirname, filename=files[0]))
         else:
             abort(404)
+
+@app.errorhandler(404) # Not found
+def fileNotFound(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(410) # Removed
+def fileNotFound(e):
+    return render_template('410.html'), 410
 
 if __name__ == '__main__':
     #app.debug = True
