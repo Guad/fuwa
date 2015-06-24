@@ -81,9 +81,9 @@ def writeBanlist():
             bans.write(pair['hash'] + ',' + pair['filename'] + ',' + pair['reason'] + '\n')
 
 def addToBanlist(fhash, fname, reason):
+    reloadBanlist(update=False)
     banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
     writeBanlist()
-    reloadBanlist(update=False)
 
 def checkFileHash(fhash): # returns: true for clean and false for dirty.
     return not any(d['hash'] == fhash for d in banlist)
