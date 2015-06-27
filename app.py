@@ -20,7 +20,7 @@ bannedExtensions = ['ade', 'adp', 'bat', 'chm', 'cmd', 'com',
                     'lib', 'lnk', 'mde', 'msc', 'msp', 'mst',
                     'pif', 'scr', 'sct', 'shb', 'sys', 'vb',
                     'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh']
-BANEXTENSIONS = False # Main switch
+BANEXTENSIONS = True # Main switch
 banlist = []
 def reloadBanlist(update=True):
     """
