@@ -261,6 +261,9 @@ function eventFileDropped(e) {
     $('#dropzone > .card-title').text('Fuwa.se');
     var files = e.dataTransfer.files;
     var ltotal = total;
+    for (var i = 0; i < onStandBy.length; i++) {
+        $('#file'+onStandBy[i]).remove();
+    };
     onStandBy.length = 0;
     $('#sub').addClass('disabled');
     $('#sub').removeClass('waves-effect waves-light');
