@@ -8,14 +8,11 @@ var hasBgColor = (new RegExp("(?:^|;\\s*)" + encodeURIComponent('bgColor').repla
 var hasBtnColor = (new RegExp("(?:^|;\\s*)" + encodeURIComponent('btnColor').replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
 
 if(hasBtnColor && hasBgColor) {
-	console.log(cookies);
 	var bgColor = document.cookie.replace(/(?:(?:^|.*;\s*)bgColor\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 	var btnColor = document.cookie.replace(/(?:(?:^|.*;\s*)btnColor\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-	console.log(bgColor + ', ' + btnColor);
 	ColorPalette.length = 0;
 	ColorPalette.push(bgColor);
 	ColorPalette.push(btnColor);
-	console.log(ColorPalette);
 }
 
 $(document).ready(function(){
