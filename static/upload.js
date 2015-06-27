@@ -42,8 +42,8 @@ $(document).ready(function()
             for (var i = fileSelect.files.length - 1; i >= 0; i--) {
                 var _id = i + _ltotal;
                 fileAlertCard(fileSelect.files[i].name, 'on stand by', _id);
-                $('#file' + _id + ' > div > div').removeClass('blue-grey darken-1');
-                $('#file' + _id + ' > div > div').addClass('blue darken-3');
+                $('#file' + _id + ' > div > div').removeClass('darken-1');
+                $('#file' + _id + ' > div > div').addClass('lighten-2');
                 onStandBy.push(_id);
             }
         }, delay);
@@ -64,12 +64,12 @@ $(document).ready(function()
                 var _id = i + ltotal;
                 var file = files[i];
                 if(file.size > 50 * 1024 * 1024) {
-                    $('#file' + _id + ' > div > div').removeClass('blue darken-3');
-                    $('#file' + _id + ' > div > div').addClass('blue-grey darken-1');
+                    $('#file' + _id + ' > div > div').removeClass('lighten-2');
+                    $('#file' + _id + ' > div > div').addClass(ColorPalette[0] + ' darken-1');
                     $('#file' + _id + ' > div > div > .card-action > a').text('File too large!');
                 } else {
-                    $('#file' + _id + ' > div > div').removeClass('blue darken-3');
-                    $('#file' + _id + ' > div > div').addClass('blue-grey darken-1');
+                    $('#file' + _id + ' > div > div').removeClass('lighten-2');
+                    $('#file' + _id + ' > div > div').addClass(ColorPalette[0] + ' darken-1');
                     $('#file' + _id + ' > div > div > .card-action > a').fadeOut(100);
                     $('#file' + _id + ' > div > div > .card-action > .progress').show();
                 }
@@ -185,7 +185,7 @@ function processFilesRecursively(fileArray)
 //Card action -> #file > div > div > .card-action
 function fileAlertCard(filename, text, id) {
     var start = '<div class="row card-out" id="file' + id + '"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
-    var color = 'blue-grey ';
+    var color = ColorPalette[0] + ' ';
     var inter = 'darken-1 z-depth-2"><div class="card-content white-text">'
     var head = '<h5 class="truncate">';
     var name =  filename;
@@ -216,7 +216,7 @@ function fileAlertCard(filename, text, id) {
 
 function alertCard(text) {
     var start = '<div class="row card-out"><div class="col s12 l6 offset-l3 m8 offset-m2"><div class="card ';
-    var color = 'orange ';
+    var color = ColorPalette[0] + ' ';
     var inter = 'darken-1 z-depth-2"><div class="card-content white-text">'
     var head = '<h5 class="truncate">';
     var icon = '<i class="small mdi-alert-warning" style="margin-right: 2%;"></i>';
@@ -261,6 +261,9 @@ function eventFileDropped(e) {
     $('#dropzone > .card-title').text('Fuwa.se');
     var files = e.dataTransfer.files;
     var ltotal = total;
+    for (var i = 0; i < onStandBy.length; i++) {
+        $('#file'+onStandBy[i]).remove();
+    };
     onStandBy.length = 0;
     $('#sub').addClass('disabled');
     $('#sub').removeClass('waves-effect waves-light');
