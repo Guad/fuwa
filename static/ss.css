@@ -65,20 +65,11 @@ body {
   color: white;
 }
 
-.palette-row {
-  display: inline-block;
-
-}
-
 .palette-box {
   float: left;
   width: 20%;
   height: 10%;
   text-align: center;
-}
-
-.palette-box  {
-  
 }
 
 .palette-end {

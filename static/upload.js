@@ -42,8 +42,8 @@ $(document).ready(function()
             for (var i = fileSelect.files.length - 1; i >= 0; i--) {
                 var _id = i + _ltotal;
                 fileAlertCard(fileSelect.files[i].name, 'on stand by', _id);
-                $('#file' + _id + ' > div > div').removeClass(ColorPalette[0] + ' darken-1');
-                $('#file' + _id + ' > div > div').addClass('blue darken-3');
+                $('#file' + _id + ' > div > div').removeClass('darken-1');
+                $('#file' + _id + ' > div > div').addClass('lighten-2');
                 onStandBy.push(_id);
             }
         }, delay);
@@ -64,11 +64,11 @@ $(document).ready(function()
                 var _id = i + ltotal;
                 var file = files[i];
                 if(file.size > 50 * 1024 * 1024) {
-                    $('#file' + _id + ' > div > div').removeClass('blue darken-3');
+                    $('#file' + _id + ' > div > div').removeClass('lighten-2');
                     $('#file' + _id + ' > div > div').addClass(ColorPalette[0] + ' darken-1');
                     $('#file' + _id + ' > div > div > .card-action > a').text('File too large!');
                 } else {
-                    $('#file' + _id + ' > div > div').removeClass('blue darken-3');
+                    $('#file' + _id + ' > div > div').removeClass('lighten-2');
                     $('#file' + _id + ' > div > div').addClass(ColorPalette[0] + ' darken-1');
                     $('#file' + _id + ' > div > div > .card-action > a').fadeOut(100);
                     $('#file' + _id + ' > div > div > .card-action > .progress').show();

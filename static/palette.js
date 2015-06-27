@@ -1,8 +1,26 @@
+var jar = document.cookie;
+var cookies = jar.split(';');
 var oldPalette = ['blue-grey', 'teal'];
 var ColorPalette = ['blue-grey', 'teal'];
 // 0: Background 1: Buttons
+
+var hasBgColor = (new RegExp("(?:^|;\\s*)" + encodeURIComponent('bgColor').replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+var hasBtnColor = (new RegExp("(?:^|;\\s*)" + encodeURIComponent('btnColor').replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+
+if(hasBtnColor && hasBgColor) {
+	console.log(cookies);
+	var bgColor = document.cookie.replace(/(?:(?:^|.*;\s*)bgColor\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+	var btnColor = document.cookie.replace(/(?:(?:^|.*;\s*)btnColor\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+	console.log(bgColor + ', ' + btnColor);
+	ColorPalette.length = 0;
+	ColorPalette.push(bgColor);
+	ColorPalette.push(btnColor);
+	console.log(ColorPalette);
+}
+
 $(document).ready(function(){
 	var numberSelected = 0;
+	updateColors();	
 
 	$('#button-palette').click(function(){
 		$('#palette-main').fadeToggle();
@@ -15,7 +33,7 @@ $(document).ready(function(){
 				$(this).html('');
 			});
 		}
-		$(this).html('<i class="small material-icons">done</i>');
+		$(this).html('<i class="small">X</i>');
 		var classes = $(this).attr('class');
 		var classesSplit = classes.split(' ');
 		var color = classesSplit[1];
@@ -23,7 +41,9 @@ $(document).ready(function(){
 		ColorPalette.push(color);
 		numberSelected += 1;
 		updateColors();
-		//console.log(ColorPalette);
+
+		document.cookie = 'bgColor=' + ColorPalette[0] + '; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/';
+		document.cookie = 'btnColor=' + ColorPalette[1] + '; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/';
 	});
 });
 
