@@ -1,7 +1,9 @@
 """Takes a list of files which have been uploaded, deletes them, and adds them to the banlist"""
-import sys, os, hashlib, shutil, string, random
+import sys, os, hashlib, shutil, string, random, sqlite3 as lite
 
-def genHash(seed, leng=5):
+PATH_TO_DB = '../files.db'
+
+def genHash(seed, leng=6):
     """ Generate five letter filenames for our files. """
     base = string.ascii_lowercase + string.digits
     random.seed(seed)
@@ -17,6 +19,13 @@ def getmd5(filename):
             md5.update(chunk)
     return md5.hexdigest()
 
+def databaseRemoval(fhash):
+    con = lite.connect(PATH_TO_DB)
+    with con:
+        cur = con.cursor()
+        cur.execute('DELETE FROM files WHERE md5Hash=?', (fhash,))
+    con.commit()
+
 banlist = []
 with open(sys.argv[1], 'r') as fin:
     for f in fin:
@@ -29,6 +38,7 @@ with open(sys.argv[1], 'r') as fin:
         fname = genHash(fhash)
         reason = sys.argv[2]
         banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
+        databaseRemoval(fhash)
         shutil.rmtree(os.path.abspath(os.path.join(f, os.pardir)))
 
 with open('../banlist.csv', 'a') as bans:

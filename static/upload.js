@@ -1,3 +1,5 @@
+var UPLOAD_LIMIT = 10 * 1024 * 1024 // 10MiB upload limit
+
 $(document).ready(function()
 {
     var theform = document.getElementById('mainform');
@@ -63,7 +65,7 @@ $(document).ready(function()
             for (i = files.length - 1; i >= 0; i--) {
                 var _id = i + ltotal;
                 var file = files[i];
-                if(file.size > 50 * 1024 * 1024) {
+                if(file.size > UPLOAD_LIMIT) {
                     $('#file' + _id + ' > div > div').removeClass('lighten-2');
                     $('#file' + _id + ' > div > div').addClass(ColorPalette[0] + ' darken-1');
                     $('#file' + _id + ' > div > div > .card-action > a').text('File too large!');
@@ -106,7 +108,7 @@ function processFilesRecursively(fileArray)
     } else {
     var id = total;
     var file = fileArray[gCounter];
-    if(file.size > 50 * 1024 * 1024)
+    if(file.size > UPLOAD_LIMIT)
     {
         gCounter += 1;
         total += 1;
@@ -274,7 +276,7 @@ function eventFileDropped(e) {
         var _id = i + ltotal;
         var file = files[i];
         fileAlertCard(files[i].name, 'on stand by', _id);
-        if(file.size > 50 * 1024 * 1024) {
+        if(file.size > UPLOAD_LIMIT) {
             $('#file' + _id + ' > div > div > .card-action > a').text('File too large!');
         } else {
             $('#file' + _id + ' > div > div > .card-action > a').fadeOut(100);
