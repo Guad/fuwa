@@ -14,6 +14,7 @@ with open('config.ini', 'r') as configuration:
         line = line.split('==')
         config[line[0]] = line[1]
 
+# Global vars
 dangerousExtensions = ['zip', 'rar', '7z', 'dll', 'exe', 'com']
 bannedExtensions = ['ade', 'adp', 'bat', 'chm', 'cmd', 'com',
                     'cpl', 'exe', 'hta', 'ins', 'isp', 'jse',
@@ -22,31 +23,7 @@ bannedExtensions = ['ade', 'adp', 'bat', 'chm', 'cmd', 'com',
                     'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh']
 BANEXTENSIONS = True # Main switch
 UPLOAD_LIMIT = 10 * 1024 * 1024 # 10MiB upload limit
-
-banlist = []
-def reloadBanlist(update=True):
-    """
-    Load banlist, you must create an empty file named
-    'banlist.csv' in the root directory first.
-    """
-    global banlist
-    print('[%s] Starting banlist reload.' % strftime('%H:%M:%S'))
-    banlist = []
-    entries = 0
-    with open('banlist.csv', 'r') as bans:
-        for line in bans.read().splitlines():
-            if len(line) == 0: 
-                continue
-            entries += 1
-            line = line.split(',');
-            banlist.append({'hash':line[0], 'filename':line[1], 'reason':line[2]})
-    print('[%s] Banlist reload complete. Found %i entries.' % (strftime('%H:%M:%S'), entries))
-    if update:
-        tim = Timer(60 * 30, reloadBanlist) # every 30 minutes
-        tim.daemon = True
-        tim.start()
-
-reloadBanlist()
+##############
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = UPLOAD_LIMIT  
@@ -111,26 +88,27 @@ def getDirnameExtension(f):
     con.close()    
     return [dirname, extension, finalHash, False]
 
-def writeBanlist():
-    """
-    Format example:
-    6a9101971cb90eb4310013c0eff14397,f7a8f,virus
-    f5dbef316466ea3552dafedae68e2841,fa212,cheesepizza
-    """
-    with open('banlist.csv', 'w') as bans:
-        for pair in banlist:
-            bans.write(pair['hash'] + ',' + pair['filename'] + ',' + pair['reason'] + '\n')
-
-def addToBanlist(fhash, fname, reason):
-    reloadBanlist(update=False)
-    banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
-    writeBanlist()
+def addToBanlist(fhash, fname, origname, reason):
+    con = lite.connect('files.db')
+    with con:
+    	cur = con.cursor()
+    	cur.execute('INSERT INTO bans (md5Hash, safeName, origName, reason) VALUES (?, ?, ?, ?)', (fhash, fname, origname, reason))
 
 def checkFileHash(fhash): # returns: true for clean and false for dirty.
-    return not any(d['hash'] == fhash for d in banlist)
+    con = lite.connect('files.db')
+    with con:
+    	cur = con.cursor()
+    	cur.execute('SELECT * FROM bans WHERE md5Hash=?', (fhash,))
+    	data = cur.fetchone()
+    	return not data
 
 def checkFileName(fname):
-    return not any(d['filename'] == fname for d in banlist)
+    con = lite.connect('files.db')
+    with con:
+    	cur = con.cursor()
+    	cur.execute('SELECT * FROM bans WHERE safeName=?', (fname,))
+    	data = cur.fetchone()
+    	return not data
 
 def databaseEntry(fname, fhash, forigname):
     con = lite.connect('files.db')
@@ -153,6 +131,9 @@ def createDatabaseTable():
         cur.execute('CREATE TABLE IF NOT EXISTS files '
             + '(md5Hash TEXT, safeName TEXT, origName TEXT, '
             + 'dateUploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP)')
+        cur.execute('CREATE TABLE IF NOT EXISTS bans '
+        	+ '(md5Hash TEXT, safeName TEXT, reason TEXT, origName TEXT, '
+        	+ 'dateBanned TIMESTAMP DEFAULT CURRENT_TIMESTAMP)')
 
 def scanForViruses(dirname, fname, fhash, extension):
     fpath = 'static/files/%s/%s' % (dirname, fname)
@@ -163,9 +144,9 @@ def scanForViruses(dirname, fname, fhash, extension):
         dirtolog = dirname
         if(len(extension) != 0):
             dirtolog = dirname.rstrip('.' + extension)
-        addToBanlist(fhash, dirtolog, 'virus')
+        addToBanlist(fhash, dirtolog, fname, 'virus')
         print('[VIRUS DETECTED] in file "%s", added to banlist and removed.' % fname)
-        rmtree('static/files/%s' % dirname) # #scary
+        rmtree('static/files/%s' % dirname) #scary
         databaseRemoval(fhash)
 
 def handleUpload(f, js=True, api=False):

@@ -37,11 +37,16 @@ with open(sys.argv[1], 'r') as fin:
         fhash = getmd5(f)
         fname = genHash(fhash)
         reason = sys.argv[2]
-        banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
+        banlist.append({'hash':fhash, 'filename':fname, 'reason':reason, 'origName':f.name})
         databaseRemoval(fhash)
         shutil.rmtree(os.path.abspath(os.path.join(f, os.pardir)))
 
 with open('../banlist.csv', 'a') as bans:
     for pair in banlist:
-        bans.write(pair['hash'] + ',' + pair['filename'] + ',' + pair['reason'] + '\n')
+        con = lite.connect(PATH_TO_DB)
+        with con:
+            cur = con.cursor()
+            fname = pair['filename'].split('.')
+            fname = fname[:-1]
+            cur.execute('INSERT INTO bans (md5Hash, safeName, origName, reason) VALUES (?, ?, ?, ?)', (pair['hash', fname, pair['origName'], pair['reason']))
           

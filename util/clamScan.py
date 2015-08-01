@@ -36,7 +36,7 @@ for f in dirs:
     f = d + os.listdir(d)[0]
     fhash = getmd5(f)
     fname = genHash(fhash)
-    hashes[of] = (fname, fhash)
+    hashes[of] = (fname, fhash, os.listdir(d)[0])
 
 call(["clamscan", "--recursive=yes","--infected", "--remove", "../static/files/"])
 banlist = []
@@ -47,6 +47,7 @@ for f in dirs:
         continue
     fname = hashes[f][0]
     fhash = hashes[f][1]
+    origName = hashes[f][2]
     reason = "virus"
     cleaned = True
     if not os.listdir(d):
@@ -55,8 +56,13 @@ for f in dirs:
     else:
         cleaned = False
     if cleaned:
-        banlist.append({'hash':fhash, 'filename':fname, 'reason':reason})
+        banlist.append({'hash':fhash, 'filename':fname, 'reason':reason, 'origName':origName})
 
 with open('../banlist.csv', 'a') as bans:
     for pair in banlist:
-        bans.write(pair['hash'] + ',' + pair['filename'] + ',' + pair['reason'] + '\n')
+        con = lite.connect(PATH_TO_DB)
+        with con:
+            cur = con.cursor()
+            fname = pair['filename'].split('.')
+            fname = fname[:-1]
+            cur.execute('INSERT INTO bans (md5Hash, safeName, origName, reason) VALUES (?, ?, ?, ?)', (pair['hash', fname, pair['origName'], pair['reason']))
